@@ -1,0 +1,29 @@
+version: "3.9"
+services:
+  authentication-microservice-api:
+    container_name: authentication-microservice-api
+    build:
+      context: ../Backend
+      dockerfile: ../Backend/Microservices/AuthenticationMicroservice/Dockerfile
+    ports:
+      - 5001:80
+    depends_on: 
+      - authentication-microservice-database
+    networks:
+      - authentication-microservice-network
+    env_file:
+      - environment/authentication-microservice/api.env
+
+  authentication-microservice-database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: authentication-microservice-database
+    ports: 
+      - 1433:1433
+    networks: 
+      - authentication-microservice-network
+    env_file:
+      - environment/authentication-microservice/database.env
+
+networks:
+  authentication-microservice-network:
+  
