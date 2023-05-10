@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using System.Text.Json;
 using FluentValidation;
 
 namespace AuthenticationMicroservice.Filters;
@@ -16,7 +17,13 @@ public class ValidationFilter<T> : IEndpointFilter
             throw new NotSupportedException("Service is not provided");
         }
 
+        if (objectToValidate == null)
+        {
+            return Results.BadRequest("Object can not be null");
+        }
+
         var validationResult = await validator.ValidateAsync(objectToValidate);
+        Console.WriteLine(JsonSerializer.Serialize(validationResult));
         if (validationResult.IsValid)
         {
             return await next.Invoke(context);

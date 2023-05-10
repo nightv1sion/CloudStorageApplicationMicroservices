@@ -30,7 +30,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
-app.MapPost("/register", async (
+app.MapPost("/api/register", async (
     RegisterUserDTO dto,
     [FromServices] UserManager<User> userManager) =>
 {
@@ -48,10 +48,17 @@ app.MapPost("/register", async (
     var result = await userManager.CreateAsync(user, dto.Password);
     if (!result.Succeeded)
     {
-        return Results.BadRequest("Something went wrong. Please check your credentials");
+        return Results.ValidationProblem(result.Errors.GroupBy(x => x.Code)
+                .ToDictionary(x => x.Key, y => y.Select(element => element.Description).ToArray()), 
+            statusCode: StatusCodes.Status422UnprocessableEntity);
     }
 
     return Results.Ok("User successfully created");
 }).AddEndpointFilter<ValidationFilter<RegisterUserDTO>>();
+
+app.MapPost("api/login", context =>
+{
+    
+});
 
 app.Run();
