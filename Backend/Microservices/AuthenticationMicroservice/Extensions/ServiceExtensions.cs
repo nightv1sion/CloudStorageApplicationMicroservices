@@ -1,4 +1,6 @@
 ﻿using AuthenticationMicroservice.Model;
+using AuthenticationMicroservice.Services;
+using AuthenticationMicroservice.Services.Contracts;
 using DatabaseInfrastructure.Helper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -25,5 +27,11 @@ public static class ServiceExtensions
             options.Password.RequireNonAlphanumeric = true;
             options.Password.RequiredUniqueChars = 1;
         }).AddEntityFrameworkStores<ApplicationDatabaseContext>();
+    }
+
+    public static void ConfigureServices(this IServiceCollection services)
+    {
+        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
     }
 }

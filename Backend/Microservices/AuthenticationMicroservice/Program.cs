@@ -1,3 +1,4 @@
+using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using AuthenticationMicroservice.DataTransferObjects;
 using AuthenticationMicroservice.Extensions;
@@ -6,6 +7,10 @@ using AuthenticationMicroservice.Model;
 using FluentValidation;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using AuthenticationMicroservice.Services;
+using AuthenticationMicroservice.Services.Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +20,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.ConfigureDatabaseContext(builder.Configuration);
 builder.Services.ConfigureIdentity();
 builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+builder.Services.ConfigureServices();
 
 var app = builder.Build();
 
@@ -32,20 +38,9 @@ app.UseAuthorization();
 
 app.MapPost("/api/register", async (
     RegisterUserDTO dto,
-    [FromServices] UserManager<User> userManager) =>
+    IAuthenticationService authenticationService) =>
 {
-    var userExists = await userManager.FindByNameAsync(dto.Username);
-    if (userExists is not null)
-    {
-        return Results.BadRequest("User with the same username already exists");
-    }
-
-    var user = new User()
-    {
-        UserName = dto.Username,
-        Email = dto.EmailAddress,
-    };
-    var result = await userManager.CreateAsync(user, dto.Password);
+    var result = await authenticationService.RegisterUserAsync(dto);
     if (!result.Succeeded)
     {
         return Results.ValidationProblem(result.Errors.GroupBy(x => x.Code)
@@ -56,9 +51,22 @@ app.MapPost("/api/register", async (
     return Results.Ok("User successfully created");
 }).AddEndpointFilter<ValidationFilter<RegisterUserDTO>>();
 
-app.MapPost("api/login", context =>
+app.MapPost("api/login", async (
+    LoginUserDTO dto, 
+    IAuthenticationService _authenticationService) =>
 {
-    
-});
+    var result = await _authenticationService.LoginUserAsync(dto);
+    if (result == null)
+    {
+        return Results.Unauthorized();
+    }
+    return Results.Ok(new
+    {
+        Token = new JwtSecurityTokenHandler().WriteToken(result.Token),
+        RefreshToken = result.RefreshToken,
+        Expiration = result.ValidTo
+    });
+;}).AddEndpointFilter<ValidationFilter<LoginUserDTO>>();
 
 app.Run();
+
