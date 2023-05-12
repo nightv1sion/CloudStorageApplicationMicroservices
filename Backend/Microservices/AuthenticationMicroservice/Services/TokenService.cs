@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using AuthenticationMicroservice.Exceptions;
 using AuthenticationMicroservice.Services.Contracts;
 using Microsoft.IdentityModel.Tokens;
 
@@ -57,13 +58,24 @@ public class TokenService : ITokenService
         };
 
         var tokenHandler = new JwtSecurityTokenHandler();
-        var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out SecurityToken securityToken);
+        ClaimsPrincipal principal;
+        SecurityToken securityToken;
+        try
+        {
+            principal = tokenHandler.ValidateToken(token, tokenValidationParameters,
+                out SecurityToken securityTokenRef);
+            securityToken = securityTokenRef;
+        }
+        catch (Exception ex)
+        {
+            throw new InvalidAccessTokenBadRequestException();
+        }
+        
         if (securityToken is not JwtSecurityToken jwtSecurityToken ||
             !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
         {
             throw new SecurityTokenException("Invalid token");
         }
-
         return principal;
     }
 }

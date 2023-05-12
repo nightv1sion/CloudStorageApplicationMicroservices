@@ -1,7 +1,10 @@
-﻿using System.Security.Claims;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using AuthenticationMicroservice.DataTransferObjects;
+using AuthenticationMicroservice.Exceptions;
 using AuthenticationMicroservice.Model;
 using Microsoft.AspNetCore.Identity;
+using Middlewares.ExceptionHandling.Exceptions;
 
 namespace AuthenticationMicroservice.Services.Contracts;
 
@@ -37,13 +40,13 @@ public class AuthenticationService : IAuthenticationService
         var user = await _userManager.FindByNameAsync(dto.Username);
         if (user == null)
         {
-            return null;
+            throw new UnauthorizedException();
         }
 
         var checkUserPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
         if (checkUserPassword == false)
         {
-            return null ;
+            throw new UnauthorizedException();
         }
 
         var authClaims = new List<Claim>
@@ -71,5 +74,43 @@ public class AuthenticationService : IAuthenticationService
             ValidTo = token.ValidTo
         };
         return result;
+    }
+
+    public async Task<TokenDTO> GetRefreshTokenAsync(TokenDTO tokenDto)
+    {
+        string accessToken = tokenDto.AccessToken;
+        string refreshToken = tokenDto.RefreshToken;
+
+        var principal = _tokenService.GetPrincipaFromExpiredToken(accessToken);
+        var username = principal.Identity?.Name;
+        var user = await _userManager.FindByNameAsync(username);
+        if (user == null)
+        {
+            throw new InvalidAccessTokenBadRequestException();
+        }
+
+        if (user.RefreshToken != refreshToken)
+        {
+            throw new InvalidRefreshTokenBadRequestException();
+        }
+
+        if (user.RefreshTokenExpiryTime <= DateTime.Now)
+        {
+            throw new RefreshTokenIsExpiredBadRequest();
+        }
+
+        var newAccessToken = _tokenService.CreateToken(principal.Claims.ToList());
+        var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+        user.RefreshToken = newRefreshToken;
+        await _userManager.UpdateAsync(user);
+
+        var newTokenDto = new TokenDTO()
+        {
+            AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
+            RefreshToken = newRefreshToken
+        };
+
+        return newTokenDto;
     }
 }

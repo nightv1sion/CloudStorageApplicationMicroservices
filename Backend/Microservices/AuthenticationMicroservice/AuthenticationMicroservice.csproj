@@ -33,6 +33,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Shared\DatabaseInfrastructure\DatabaseInfrastructure.csproj" />
+      <ProjectReference Include="..\..\Shared\Middlewares\Middlewares.csproj" />
     </ItemGroup>
 
 </Project>

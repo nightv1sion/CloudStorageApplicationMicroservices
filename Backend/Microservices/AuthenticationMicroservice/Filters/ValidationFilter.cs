@@ -23,7 +23,6 @@ public class ValidationFilter<T> : IEndpointFilter
         }
 
         var validationResult = await validator.ValidateAsync(objectToValidate);
-        Console.WriteLine(JsonSerializer.Serialize(validationResult));
         if (validationResult.IsValid)
         {
             return await next.Invoke(context);
