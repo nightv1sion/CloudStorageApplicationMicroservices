@@ -23,7 +23,33 @@ services:
       - authentication-microservice-network
     env_file:
       - environment/authentication-microservice/database.env
+  
+  audio-files-microservice-api:
+    container_name: audio-files-microservice-api
+    build:
+      context: ../Backend
+      dockerfile: ../Backend/Microservices/AudioFilesMicroservice/Dockerfile
+    ports:
+      - 5002:80
+    depends_on:
+      - audio-files-microservice-database
+    networks:
+      - audio-files-microservice-network
+    env_file:
+      - environment/audio-files-microservice/api.env
+
+  audio-files-microservice-database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: audio-files-microservice-database
+    ports:
+      - 1434:1433
+    networks:
+      - audio-files-microservice-network
+    env_file:
+      - environment/audio-files-microservice/database.env
 
 networks:
   authentication-microservice-network:
+  audio-files-microservice-network:
+
   
