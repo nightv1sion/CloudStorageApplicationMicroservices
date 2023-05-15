@@ -13,6 +13,8 @@ services:
       - authentication-microservice-network
     env_file:
       - environment/authentication-microservice/api.env
+    volumes:
+      - authentication-microservice-logs:/app/logs
 
   authentication-microservice-database:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -52,4 +54,6 @@ networks:
   authentication-microservice-network:
   audio-files-microservice-network:
 
+volumes: 
+  authentication-microservice-logs:
   
