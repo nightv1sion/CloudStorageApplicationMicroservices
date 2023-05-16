@@ -1,10 +1,9 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using AuthenticationMicroservice.DataTransferObjects;
 using AuthenticationMicroservice.Filters;
-using AuthenticationMicroservice.Model;
 using AuthenticationMicroservice.Services;
 using AuthenticationMicroservice.Services.Contracts;
-using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AuthenticationMicroservice.Extensions;
 
@@ -32,7 +31,8 @@ public static class MinimalApiExtensions
 
         group.MapPost("/login", async (
             LoginUserDTO dto, 
-            IAuthenticationService authenticationService) =>
+            IAuthenticationService authenticationService,
+            [FromServices] ILogger<AuthenticationService> logger) =>
         {
             var result = await authenticationService.LoginUserAsync(dto);
             return Results.Ok(new

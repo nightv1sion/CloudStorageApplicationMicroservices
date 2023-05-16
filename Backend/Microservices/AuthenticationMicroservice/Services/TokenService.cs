@@ -2,7 +2,7 @@
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using AuthenticationMicroservice.Exceptions;
+using AuthenticationMicroservice.Exceptions.BadRequest;
 using AuthenticationMicroservice.Services.Contracts;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,11 +11,15 @@ namespace AuthenticationMicroservice.Services;
 public class TokenService : ITokenService
 {
     private readonly IConfiguration _configuration;
+    private readonly ILogger<TokenService> _logger;
 
     public TokenService(
-        IConfiguration configuration)
+        IConfiguration configuration,
+        ILogger<TokenService> logger)
     {
         _configuration = configuration;
+        _logger = logger;
+        _logger.LogInformation("Token Service called");
     }
     public JwtSecurityToken CreateToken(List<Claim> authClaims)
     {
@@ -29,7 +33,8 @@ public class TokenService : ITokenService
         var signingCredentials = new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(expires: expiredDateTime, claims: authClaims,
             signingCredentials: signingCredentials);
-
+        
+        _logger.LogInformation("Token successfully created");
         return token;    
 ;    }
 
@@ -76,6 +81,8 @@ public class TokenService : ITokenService
         {
             throw new SecurityTokenException("Invalid token");
         }
+        
+        _logger.LogInformation("Successfully retrieved principal from expired access token");
         return principal;
     }
 }

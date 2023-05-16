@@ -1,7 +1,8 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AuthenticationMicroservice.DataTransferObjects;
-using AuthenticationMicroservice.Exceptions;
+using AuthenticationMicroservice.Exceptions.BadRequest;
+using AuthenticationMicroservice.Exceptions.Unauthorized;
 using AuthenticationMicroservice.Model;
 using Microsoft.AspNetCore.Identity;
 using Middlewares.ExceptionHandling.Exceptions;
@@ -13,15 +14,19 @@ public class AuthenticationService : IAuthenticationService
     private readonly UserManager<User> _userManager;
     private readonly ITokenService _tokenService;
     private readonly IConfiguration _configuration;
+    private readonly ILogger<AuthenticationService> _logger;
 
     public AuthenticationService(
         UserManager<User> userManager,
         ITokenService tokenService,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        ILogger<AuthenticationService> logger)
     {
         _userManager = userManager;
         _tokenService = tokenService;
         _configuration = configuration;
+        _logger = logger;
+        _logger.LogInformation("Authentication Service called");
     }
     public async Task<IdentityResult> RegisterUserAsync(RegisterUserDTO dto)
     {
@@ -32,6 +37,8 @@ public class AuthenticationService : IAuthenticationService
         };
         var result = await _userManager.CreateAsync(user, dto.Password);
 
+        _logger.LogInformation(
+            $"User with username '{user.UserName}' successfully registered: {result.Succeeded}");
         return result;
     }
 
@@ -40,13 +47,13 @@ public class AuthenticationService : IAuthenticationService
         var user = await _userManager.FindByNameAsync(dto.Username);
         if (user == null)
         {
-            throw new UnauthorizedException();
+            throw new InvalidUserNameUnauthorized(dto.Username);
         }
 
         var checkUserPassword = await _userManager.CheckPasswordAsync(user, dto.Password);
         if (checkUserPassword == false)
         {
-            throw new UnauthorizedException();
+            throw new InvalidUserPasswordUnauthorized(dto.Username);
         }
 
         var authClaims = new List<Claim>
@@ -73,6 +80,8 @@ public class AuthenticationService : IAuthenticationService
             RefreshToken = refreshToken,
             ValidTo = token.ValidTo
         };
+        
+        _logger.LogInformation($"User '{user.UserName} successfully logged in'");
         return result;
     }
 
@@ -86,17 +95,17 @@ public class AuthenticationService : IAuthenticationService
         var user = await _userManager.FindByNameAsync(username);
         if (user == null)
         {
-            throw new InvalidAccessTokenBadRequestException();
+            throw new InvalidAccessTokenBadRequestException(username);
         }
 
         if (user.RefreshToken != refreshToken)
         {
-            throw new InvalidRefreshTokenBadRequestException();
+            throw new InvalidRefreshTokenBadRequestException(username);
         }
 
         if (user.RefreshTokenExpiryTime <= DateTime.Now)
         {
-            throw new RefreshTokenIsExpiredBadRequest();
+            throw new RefreshTokenIsExpiredBadRequest(username);
         }
 
         var newAccessToken = _tokenService.CreateToken(principal.Claims.ToList());
@@ -110,7 +119,8 @@ public class AuthenticationService : IAuthenticationService
             AccessToken = new JwtSecurityTokenHandler().WriteToken(newAccessToken),
             RefreshToken = newRefreshToken
         };
-
+       
+        _logger.LogInformation($"User '{user.UserName}': refresh token successfully generated");
         return newTokenDto;
     }
 }
