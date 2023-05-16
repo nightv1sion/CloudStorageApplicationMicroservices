@@ -14,7 +14,7 @@ services:
     env_file:
       - environment/authentication-microservice/api.env
     volumes:
-      - authentication-microservice-logs:/app/logs
+      - authentication-microservice-logs:/logs
 
   authentication-microservice-database:
     image: mcr.microsoft.com/mssql/server:2022-latest
