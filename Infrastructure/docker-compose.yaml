@@ -4,7 +4,7 @@ services:
     container_name: authentication-microservice-api
     build:
       context: ../Backend
-      dockerfile: ../Backend/Microservices/AuthenticationMicroservice/Dockerfile
+      dockerfile: ../Backend/Microservices/Authentication/Authentication.API/Dockerfile
     ports:
       - 5001:80
     depends_on: 
@@ -30,7 +30,7 @@ services:
     container_name: audio-files-microservice-api
     build:
       context: ../Backend
-      dockerfile: ../Backend/Microservices/AudioFilesMicroservice/Dockerfile
+      dockerfile: ../Backend/Microservices/Audio/Audio.API/Dockerfile
     ports:
       - 5002:80
     depends_on:
