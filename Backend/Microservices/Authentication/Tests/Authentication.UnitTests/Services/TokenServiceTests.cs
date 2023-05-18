@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Authentication.API.Exceptions.BadRequest;
 using Authentication.API.Model;
 using Authentication.API.Services;
 using Authentication.API.Services.Contracts;
@@ -16,9 +17,6 @@ public class TokenServiceTests
     private readonly ITokenService _service;
     private readonly Mock<ApplicationDatabaseContext> _context;
     private readonly Mock<IConfiguration> _configuration;
-    private readonly string _jwtSecret;
-    private readonly int _tokenValidityInMinutes;
-    private readonly string _username;
 
     public TokenServiceTests()
     {
@@ -26,25 +24,26 @@ public class TokenServiceTests
         _configuration = new Mock<IConfiguration>();
         var logger = new Logger<TokenService>(new LoggerFactory());
         _service = new TokenService(_configuration.Object, logger);
-        _jwtSecret = "some jwt secret key";
-        _tokenValidityInMinutes = 7;
-        _username = "someusername";
+        
     }
 
     [Fact]
     public void TokenService_CreateToken_ReturnsValidJWTSecurityToken()
     {
         // Arrange
+        var jwtSecret = "some jwt secret key";
+        var tokenValidityInMinutes = 7;
+        var username = "someusername";
         _configuration.Setup<string>(x => x["JWT_SECRET"])
-            .Returns(_jwtSecret);
+            .Returns(jwtSecret);
         _configuration.Setup<string>(x => x["JWT:TokenValidityInMinutes"])
-            .Returns(_tokenValidityInMinutes.ToString());
+            .Returns(tokenValidityInMinutes.ToString());
         var authClaims = new List<Claim>()
         {
-            new Claim(ClaimTypes.Name, _username),
+            new Claim(ClaimTypes.Name, username),
         };
 
-        var expectedToken = CreateJwtToken(_jwtSecret, _tokenValidityInMinutes, authClaims);
+        var expectedToken = CreateJwtToken(jwtSecret, tokenValidityInMinutes, authClaims);
         var tokenHandler = new JwtSecurityTokenHandler();
         // Act
         var securityToken = _service.CreateToken(authClaims);
@@ -60,13 +59,16 @@ public class TokenServiceTests
     public void TokenService_CreateToken_ThrowsInvalidOperationExceptions_WhenTokenValidityInMinutesIsNotPresent()
     {
         // Arrange
+        var jwtSecret = "some jwt secret key";
+        var tokenValidityInMinutes = "invalid number";
+        var username = "someusername";
         _configuration.Setup<string>(x => x["JWT_SECRET"])
-            .Returns(_jwtSecret);
-        _configuration.Setup(conf => conf["JWT:TokenValidityInMinutes"])
-            .Returns(_tokenValidityInMinutes.ToString());
+            .Returns(jwtSecret);
+        _configuration.Setup<string>(conf => conf["JWT:TokenValidityInMinutes"])
+            .Returns(tokenValidityInMinutes);
         var authClaims = new List<Claim>()
         {
-            new Claim(ClaimTypes.Name, _username),
+            new Claim(ClaimTypes.Name, username),
         };
         
         // Act 
@@ -79,13 +81,16 @@ public class TokenServiceTests
     public void TokenService_GetPrincipalFromExpiredToken_ThrowsException_WhenJwtSecretIsNotPresent()
     {
         // Arrange
+        var jwtSecret = "some jwt secret key";
+        var tokenValidityInMinutes = 7;
+        var username = "someusername";
         _configuration.Setup(conf => conf["JWT_SECRET"])
             .Returns("");
         var authClaims = new List<Claim>()
         {
-            new Claim(ClaimTypes.Name, _username),
+            new Claim(ClaimTypes.Name, username),
         };
-        var token = CreateJwtToken(_jwtSecret, _tokenValidityInMinutes, authClaims);
+        var token = CreateJwtToken(jwtSecret, tokenValidityInMinutes, authClaims);
         
         // Act
         var func = () => _service.GetPrincipaFromExpiredToken(token);
@@ -93,7 +98,54 @@ public class TokenServiceTests
         // Assert
         Assert.Throws<InvalidOperationException>(func);
     }
+    [Fact]
+    public void TokenService_GetPrincipalFromExpiredToken_ThrowsInvalidAccessTokenBadRequestException_WhenTokenIsInvalid()
+    {
+        // Arrange
+        var jwtSecret = "some jwt secret key";
+        var tokenValidityInMinutes = 7;
+        var username = "someusername";
+        var claims = new List<Claim>()
+        {
+            new Claim(ClaimTypes.Name, username)
+        };
+        _configuration.Setup(conf => conf["JWT_SECRET"])
+            .Returns(jwtSecret);
+        var createdToken = CreateJwtToken(jwtSecret, tokenValidityInMinutes, claims);
+        var token = createdToken.Reverse().ToString();
+        
+        // Act
+        var func = () => _service.GetPrincipaFromExpiredToken(token);
+        
+        // Assert
+        Assert.Throws<InvalidAccessTokenBadRequestException>(func);
+    }
 
+    [Fact]
+    public void TokenService_GetPrincipalFromExpiredToken_ReturnsValidPrincipal()
+    {
+        // Arrange
+        var jwtSecret = "some jwt secret key";
+        var tokenValidityInMinutes = 7;
+        var username = "someusername";
+        
+        var claims = new List<Claim>()
+        {
+            new Claim(ClaimTypes.Name, username)
+        };
+        _configuration.Setup(conf => conf["JWT_SECRET"])
+            .Returns(jwtSecret);
+        var token = CreateJwtToken(jwtSecret, tokenValidityInMinutes, claims);
+        
+        // Act
+        var principal = _service.GetPrincipaFromExpiredToken(token);
+        
+        // Assert
+        var nameFromPrincipal = principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
+        Assert.NotNull(nameFromPrincipal);
+        Assert.NotEmpty(nameFromPrincipal);
+        Assert.Equal(username, nameFromPrincipal);
+    }
     private string CreateJwtToken(string jwtSecret, int tokenValidityInMinutes, List<Claim> authClaims)
     {
         var expiredDateTime = DateTime.Now.AddMinutes(tokenValidityInMinutes);

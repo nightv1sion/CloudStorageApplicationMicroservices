@@ -54,7 +54,7 @@ public class TokenService : ITokenService
     public ClaimsPrincipal GetPrincipaFromExpiredToken(string token)
     {
         var jwtSecret = _configuration["JWT_SECRET"];
-        if (jwtSecret == null)
+        if (string.IsNullOrEmpty(jwtSecret))
         {
             throw new InvalidOperationException("Environment variable JWT_SECRET does not exists");
         }
