@@ -35,12 +35,7 @@ public static class MinimalApiExtensions
             [FromServices] ILogger<AuthenticationService> logger) =>
         {
             var result = await authenticationService.LoginUserAsync(dto);
-            return Results.Ok(new
-            {
-                Token = new JwtSecurityTokenHandler().WriteToken(result.Token),
-                RefreshToken = result.RefreshToken,
-                Expiration = result.ValidTo
-            });
+            return Results.Ok(result);
         ;}).AddEndpointFilter<ValidationFilter<LoginUserDTO>>();
 
         group.MapPost("/refresh-token", async (

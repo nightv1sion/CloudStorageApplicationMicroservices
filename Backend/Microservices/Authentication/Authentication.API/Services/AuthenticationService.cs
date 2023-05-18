@@ -4,10 +4,10 @@ using Authentication.API.DataTransferObjects;
 using Authentication.API.Exceptions.BadRequest;
 using Authentication.API.Exceptions.Unauthorized;
 using Authentication.API.Model;
+using Authentication.API.Services.Contracts;
 using Microsoft.AspNetCore.Identity;
-using Middlewares.ExceptionHandling.Exceptions;
 
-namespace Authentication.API.Services.Contracts;
+namespace Authentication.API.Services;
 
 public class AuthenticationService : IAuthenticationService
 {
@@ -73,10 +73,11 @@ public class AuthenticationService : IAuthenticationService
         user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
 
         await _userManager.UpdateAsync(user);
-
+        var tokenHandler = new JwtSecurityTokenHandler();
+        
         var result = new SuccessfulAuthenticationDTO()
         {
-            Token = token,
+            Token = tokenHandler.WriteToken(token),
             RefreshToken = refreshToken,
             ValidTo = token.ValidTo
         };

@@ -1,7 +1,7 @@
 ﻿using Authentication.API.DataTransferObjects;
 using Microsoft.AspNetCore.Identity;
 
-namespace Authentication.API.Services;
+namespace Authentication.API.Services.Contracts;
 
 public interface IAuthenticationService
 {
