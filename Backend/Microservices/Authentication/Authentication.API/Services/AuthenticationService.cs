@@ -59,6 +59,7 @@ public class AuthenticationService : IAuthenticationService
         var authClaims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.Expired, user.UserName),
         };
 
         var token = _tokenService.CreateToken(authClaims);
@@ -91,7 +92,7 @@ public class AuthenticationService : IAuthenticationService
         string accessToken = tokenDto.AccessToken;
         string refreshToken = tokenDto.RefreshToken;
 
-        var principal = _tokenService.GetPrincipaFromExpiredToken(accessToken);
+        var (principal, _) = _tokenService.GetPrincipalFromAccessToken(accessToken);
         var username = principal.Identity?.Name;
         var user = await _userManager.FindByNameAsync(username);
         if (user == null)
@@ -123,5 +124,15 @@ public class AuthenticationService : IAuthenticationService
        
         _logger.LogInformation($"User '{user.UserName}': refresh token successfully generated");
         return newTokenDto;
+    }
+
+    public bool ValidateUser(string accessToken)
+    {
+        var (_, validTo) = _tokenService.GetPrincipalFromAccessToken(accessToken);
+        if (validTo < DateTime.Now)
+        {
+            throw new InvalidAccessTokenBadRequestException();
+        }
+        return true;
     }
 }

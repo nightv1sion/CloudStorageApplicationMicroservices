@@ -6,7 +6,7 @@ services:
       context: ../Backend
       dockerfile: ../Backend/Microservices/Authentication/Authentication.API/Dockerfile
     ports:
-      - 5001:80
+      - "5001:80"
     depends_on: 
       - authentication-microservice-database
     networks:
@@ -20,7 +20,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: authentication-microservice-database
     ports: 
-      - 1433:1433
+      - "1433:1433"
     networks: 
       - authentication-microservice-network
     env_file:
@@ -32,7 +32,7 @@ services:
       context: ../Backend
       dockerfile: ../Backend/Microservices/Audio/Audio.API/Dockerfile
     ports:
-      - 5002:80
+      - "5002:80"
     depends_on:
       - audio-files-microservice-database
     networks:
@@ -44,11 +44,20 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: audio-files-microservice-database
     ports:
-      - 1434:1433
+      - "1434:1433"
     networks:
       - audio-files-microservice-network
     env_file:
       - environment/audio-files-microservice/database.env
+  ocelot-api-gateway:
+    container_name: ocelot-api-gateway
+    build:
+      context: ../Backend
+      dockerfile: ../Backend/ApiGateways/OcelotApiGateway/Dockerfile
+    ports:
+      - "5003:80"
+    depends_on: 
+      - authentication-microservice-api
 
 networks:
   authentication-microservice-network:

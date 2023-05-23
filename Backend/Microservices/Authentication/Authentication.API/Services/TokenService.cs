@@ -51,7 +51,7 @@ public class TokenService : ITokenService
         return Convert.ToBase64String(randomNumber);
     }
 
-    public ClaimsPrincipal GetPrincipaFromExpiredToken(string token)
+    public (ClaimsPrincipal claimsPrincipal, DateTime validTo) GetPrincipalFromAccessToken(string token)
     {
         var jwtSecret = _configuration["JWT_SECRET"];
         if (string.IsNullOrEmpty(jwtSecret))
@@ -88,6 +88,6 @@ public class TokenService : ITokenService
         }
         
         _logger.LogInformation("Successfully retrieved principal from expired access token");
-        return principal;
+        return (principal, securityToken.ValidTo);
     }
 }
