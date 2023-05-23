@@ -188,4 +188,58 @@ public class AuthenticationServiceTests
         // Assert
         await Assert.ThrowsAsync<InvalidAccessTokenBadRequestException>(func);
     }
+    [Fact]
+    public async Task
+        AuthenticationService_GetRefreshTokenAsync_ThrowsInvalidRefreshTokenBadRequestException()
+    {
+        // Arrange
+        var refreshToken = "refreshToken";
+        var dto = new TokenDTO()
+        {
+            AccessToken = It.IsAny<string>(),
+            RefreshToken = refreshToken,
+        };
+        var claimsPrincipal = new ClaimsPrincipal();
+        _tokenService.Setup(x => x.GetPrincipaFromExpiredToken(It.IsAny<string>()))
+            .Returns(claimsPrincipal);
+        _userManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(new User()
+            {
+                RefreshToken = $"invalid {refreshToken}"
+            });
+        
+        // Act
+        var func = async () => await _service.GetRefreshTokenAsync(dto);
+        
+        // Assert
+        await Assert.ThrowsAsync<InvalidRefreshTokenBadRequestException>(func);
+    }
+    [Fact]
+    public async Task
+        AuthenticationService_GetRefreshTokenAsync_ThrowsRefreshTokenIsExpiredBadRequest()
+    {
+        // Arrange
+        var refreshToken = "refreshToken";
+        var invalidRefreshTokenExpiryDate = DateTime.Now.AddDays(-1);
+        var dto = new TokenDTO()
+        {
+            AccessToken = It.IsAny<string>(),
+            RefreshToken = refreshToken,
+        };
+        var claimsPrincipal = new ClaimsPrincipal();
+        _tokenService.Setup(x => x.GetPrincipaFromExpiredToken(It.IsAny<string>()))
+            .Returns(claimsPrincipal);
+        _userManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
+            .ReturnsAsync(new User()
+            {
+                RefreshToken = refreshToken,
+                RefreshTokenExpiryTime = invalidRefreshTokenExpiryDate,
+            });
+        
+        // Act
+        var func = async () => await _service.GetRefreshTokenAsync(dto);
+        
+        // Assert
+        await Assert.ThrowsAsync<RefreshTokenIsExpiredBadRequest>(func);
+    }
 }
