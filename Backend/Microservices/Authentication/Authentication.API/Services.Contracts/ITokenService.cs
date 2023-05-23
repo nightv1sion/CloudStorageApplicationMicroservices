@@ -7,5 +7,5 @@ public interface ITokenService
 {
     JwtSecurityToken CreateToken(List<Claim> authClaims);
     string GenerateRefreshToken();
-    ClaimsPrincipal GetPrincipaFromExpiredToken(string token);
+    (ClaimsPrincipal claimsPrincipal, DateTime validTo) GetPrincipalFromAccessToken(string token);
 }
