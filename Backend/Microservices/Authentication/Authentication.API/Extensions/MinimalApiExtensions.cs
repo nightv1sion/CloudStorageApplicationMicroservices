@@ -47,8 +47,8 @@ public static class MinimalApiExtensions
             return Results.Ok(newTokenDto);
         }).AddEndpointFilter<ValidationFilter<TokenDTO>>();
 
-        group.MapPost("/validate-user", async(
-            [FromBody]string accessToken,
+        group.MapPost("/validate-user", async (
+            [FromBody] string accessToken,
             IAuthenticationService authenticationService) =>
         {
             var result = authenticationService.ValidateUser(accessToken);
@@ -56,6 +56,7 @@ public static class MinimalApiExtensions
             {
                 return Results.Ok();
             }
+
             return Results.Unauthorized();
         });
     }
