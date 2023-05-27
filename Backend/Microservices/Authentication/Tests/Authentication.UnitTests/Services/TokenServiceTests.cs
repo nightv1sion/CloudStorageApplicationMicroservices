@@ -93,7 +93,7 @@ public class TokenServiceTests
         var token = CreateJwtToken(jwtSecret, tokenValidityInMinutes, authClaims);
         
         // Act
-        var func = () => _service.GetPrincipaFromExpiredToken(token);
+        var func = () => { _service.GetPrincipalFromAccessToken(token); };
 
         // Assert
         Assert.Throws<InvalidOperationException>(func);
@@ -115,7 +115,7 @@ public class TokenServiceTests
         var token = createdToken.Reverse().ToString();
         
         // Act
-        var func = () => _service.GetPrincipaFromExpiredToken(token);
+        var func = () => { _service.GetPrincipalFromAccessToken(token); };
         
         // Assert
         Assert.Throws<InvalidAccessTokenBadRequestException>(func);
@@ -138,7 +138,7 @@ public class TokenServiceTests
         var token = CreateJwtToken(jwtSecret, tokenValidityInMinutes, claims);
         
         // Act
-        var principal = _service.GetPrincipaFromExpiredToken(token);
+        var (principal, _) = _service.GetPrincipalFromAccessToken(token);
         
         // Assert
         var nameFromPrincipal = principal.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value;
