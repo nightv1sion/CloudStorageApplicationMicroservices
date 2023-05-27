@@ -177,8 +177,8 @@ public class AuthenticationServiceTests
             RefreshToken = It.IsAny<string>(),
         };
         var claimsPrincipal = new ClaimsPrincipal();
-        _tokenService.Setup(x => x.GetPrincipaFromExpiredToken(It.IsAny<string>()))
-            .Returns(claimsPrincipal);
+        _tokenService.Setup(x => x.GetPrincipalFromAccessToken(It.IsAny<string>()))
+            .Returns((claimsPrincipal, new DateTime()));
         _userManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
             .ReturnsAsync((User) null);
         
@@ -200,8 +200,8 @@ public class AuthenticationServiceTests
             RefreshToken = refreshToken,
         };
         var claimsPrincipal = new ClaimsPrincipal();
-        _tokenService.Setup(x => x.GetPrincipaFromExpiredToken(It.IsAny<string>()))
-            .Returns(claimsPrincipal);
+        _tokenService.Setup(x => x.GetPrincipalFromAccessToken(It.IsAny<string>()))
+            .Returns((claimsPrincipal, new DateTime()));
         _userManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
             .ReturnsAsync(new User()
             {
@@ -227,8 +227,8 @@ public class AuthenticationServiceTests
             RefreshToken = refreshToken,
         };
         var claimsPrincipal = new ClaimsPrincipal();
-        _tokenService.Setup(x => x.GetPrincipaFromExpiredToken(It.IsAny<string>()))
-            .Returns(claimsPrincipal);
+        _tokenService.Setup(x => x.GetPrincipalFromAccessToken(It.IsAny<string>()))
+            .Returns((claimsPrincipal, new DateTime()));
         _userManager.Setup(x => x.FindByNameAsync(It.IsAny<string>()))
             .ReturnsAsync(new User()
             {
