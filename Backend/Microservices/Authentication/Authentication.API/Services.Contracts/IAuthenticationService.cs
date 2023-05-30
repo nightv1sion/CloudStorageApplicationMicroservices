@@ -8,6 +8,5 @@ public interface IAuthenticationService
     Task<IdentityResult> RegisterUserAsync(RegisterUserDTO dto);
     Task<SuccessfulAuthenticationDTO> LoginUserAsync(LoginUserDTO dto);
     Task<TokenDTO> GetRefreshTokenAsync(TokenDTO tokenDto);
-    bool ValidateUser(string accessToken);
-
+    (bool isSuccessful , Guid userId) ValidateUser(string accessToken);
 }
