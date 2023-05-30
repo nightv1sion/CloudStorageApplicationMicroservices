@@ -59,6 +59,7 @@ public class AuthenticationService : IAuthenticationService
         var authClaims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.UserName),
+            new Claim(ClaimTypes.NameIdentifier, user.Id),
             new Claim(ClaimTypes.Expired, user.UserName),
         };
 
@@ -126,13 +127,25 @@ public class AuthenticationService : IAuthenticationService
         return newTokenDto;
     }
 
-    public bool ValidateUser(string accessToken)
+    public (bool isSuccessful, Guid userId) ValidateUser(string accessToken)
     {
-        var (_, validTo) = _tokenService.GetPrincipalFromAccessToken(accessToken);
+        var (claims, validTo) = _tokenService.GetPrincipalFromAccessToken(accessToken);
         if (validTo < DateTime.Now)
         {
             throw new InvalidAccessTokenBadRequestException();
         }
-        return true;
+
+        var idClaim = claims.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier)?.Value;
+        if (idClaim == null)
+        {
+            throw new InvalidAccessTokenBadRequestException();
+        }
+
+        if (Guid.TryParse(idClaim, out Guid userId))
+        {
+            return (true, userId);
+        }
+
+        throw new InvalidAccessTokenBadRequestException();
     }
 }

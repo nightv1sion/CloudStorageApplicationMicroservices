@@ -26,6 +26,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\..\Shared\DatabaseInfrastructure\DatabaseInfrastructure.csproj" />
+      <ProjectReference Include="..\..\..\Shared\Services\Services.csproj" />
     </ItemGroup>
 
 </Project>

@@ -8,4 +8,6 @@ public class ApplicationDatabaseContext : DbContext
     {
         
     }
+
+    public DbSet<AudioFile> AudioFiles { get; set; }
 }

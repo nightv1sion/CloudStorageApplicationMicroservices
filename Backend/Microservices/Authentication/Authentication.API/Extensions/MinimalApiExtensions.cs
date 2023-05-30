@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Text.Json;
 using Authentication.API.DataTransferObjects;
 using Authentication.API.Filters;
 using Authentication.API.Services;
@@ -16,8 +17,10 @@ public static class MinimalApiExtensions
         
         group.MapPost("/register", async (
             RegisterUserDTO dto,
+            HttpContext context,
             IAuthenticationService authenticationService) =>
         {
+            Console.WriteLine(JsonSerializer.Serialize(context.Request.Headers.ToDictionary(x => x.Key, x => x.Value)));
             var result = await authenticationService.RegisterUserAsync(dto);
             if (!result.Succeeded)
             {
@@ -51,10 +54,10 @@ public static class MinimalApiExtensions
             [FromBody] string accessToken,
             IAuthenticationService authenticationService) =>
         {
-            var result = authenticationService.ValidateUser(accessToken);
+            var (result, userId) = authenticationService.ValidateUser(accessToken);
             if (result == true)
             {
-                return Results.Ok();
+                return Results.Ok(new { UserId = userId });
             }
 
             return Results.Unauthorized();
