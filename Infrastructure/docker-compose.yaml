@@ -39,7 +39,9 @@ services:
       - audio-files-microservice-network
     env_file:
       - environment/audio-files-microservice/api.env
-
+    volumes:
+      - audio-files-microservice-file-storage:/app/fileStorage/audio
+        
   audio-files-microservice-database:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: audio-files-microservice-database
@@ -49,6 +51,7 @@ services:
       - audio-files-microservice-network
     env_file:
       - environment/audio-files-microservice/database.env
+  
   ocelot-api-gateway:
     container_name: ocelot-api-gateway
     build:
@@ -65,4 +68,5 @@ networks:
 
 volumes: 
   authentication-microservice-logs:
+  audio-files-microservice-file-storage:
   

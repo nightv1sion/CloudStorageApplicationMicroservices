@@ -1,4 +1,6 @@
 ﻿using Audio.API.Model;
+using Audio.API.Services;
+using Audio.API.Services.Contracts;
 using DatabaseInfrastructure.Helper;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,7 +21,13 @@ public static class ServicesExtensions
         else {
             services.AddDbContext<ApplicationDatabaseContext>(
             x => x.UseSqlServer(
-                ConnectionStringHelper.GetConnectionString(configuration)));
+                configuration.GetConnectionString()));
         }
+    }
+
+    public static void ConfigureServices(this IServiceCollection services)
+    {
+        services.AddScoped<IFileService, FileService>();
+        services.AddScoped<IAudioFileService, AudioFileService>();
     }
 }

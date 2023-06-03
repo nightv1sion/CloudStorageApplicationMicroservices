@@ -31,4 +31,12 @@
       <ProjectReference Include="..\..\..\Shared\Services\Services.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="FileStorage\Audio\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="FileStorage\Audio\e7bb5d08-b545-4a98-9052-06ff6acd82b3.pdf" />
+    </ItemGroup>
+
 </Project>
