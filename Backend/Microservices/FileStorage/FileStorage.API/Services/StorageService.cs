@@ -1,18 +1,18 @@
-﻿using Audio.API.Services.Contracts;
+﻿using FileStorage.API.Services.Contracts;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Audio.API.Services;
+namespace FileStorage.API.Services;
 
-public class FileService : IFileService
+public class StorageService : IStorageService
 {
     private readonly IConfiguration _configuration;
 
-    public FileService(IConfiguration configuration)
+    public StorageService(IConfiguration configuration)
     {
         _configuration = configuration;
     }
 
-    public async Task<byte[]> GetFormFileAsync(string systemFileNameWithExtension, string fileName)
+    public async Task<byte[]> GetFileAsync(string systemFileNameWithExtension, string fileName)
     {
         var folderPath = GetFolderPath();
         var filePath = Path.Combine(folderPath, systemFileNameWithExtension);

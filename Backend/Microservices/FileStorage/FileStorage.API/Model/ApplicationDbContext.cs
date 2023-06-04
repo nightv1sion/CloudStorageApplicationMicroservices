@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Audio.API.Model;
+namespace FileStorage.API.Model;
 
 public class ApplicationDatabaseContext : DbContext
 {
@@ -9,5 +9,5 @@ public class ApplicationDatabaseContext : DbContext
         
     }
 
-    public DbSet<AudioFile> AudioFiles { get; set; }
+    public DbSet<File> Files { get; set; }
 }

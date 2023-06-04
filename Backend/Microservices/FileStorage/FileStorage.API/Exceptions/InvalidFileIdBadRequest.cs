@@ -1,6 +1,6 @@
 ﻿using Middlewares.ExceptionHandling.Exceptions;
 
-namespace Audio.API.Exceptions;
+namespace FileStorage.API.Exceptions;
 
 public class InvalidFileIdBadRequest : BadRequestException
 {

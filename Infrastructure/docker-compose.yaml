@@ -26,31 +26,31 @@ services:
     env_file:
       - environment/authentication-microservice/database.env
   
-  audio-files-microservice-api:
-    container_name: audio-files-microservice-api
+  file-storage-microservice-api:
+    container_name: file-storage-microservice-api
     build:
       context: ../Backend
-      dockerfile: ../Backend/Microservices/Audio/Audio.API/Dockerfile
+      dockerfile: ../Backend/Microservices/FileStorage/FileStorage.API/Dockerfile
     ports:
       - "5002:80"
     depends_on:
-      - audio-files-microservice-database
+      - file-storage-microservice-database
     networks:
-      - audio-files-microservice-network
+      - file-storage-microservice-network
     env_file:
-      - environment/audio-files-microservice/api.env
+      - environment/file-storage-microservice/api.env
     volumes:
-      - audio-files-microservice-file-storage:/app/fileStorage/audio
+      - file-storage-microservice-volume:/app/fileStorage
         
-  audio-files-microservice-database:
+  file-storage-microservice-database:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: audio-files-microservice-database
+    container_name: file-storage-microservice-database
     ports:
       - "1434:1433"
     networks:
-      - audio-files-microservice-network
+      - file-storage-microservice-network
     env_file:
-      - environment/audio-files-microservice/database.env
+      - environment/file-storage-microservice/database.env
   
   ocelot-api-gateway:
     container_name: ocelot-api-gateway
@@ -64,9 +64,9 @@ services:
 
 networks:
   authentication-microservice-network:
-  audio-files-microservice-network:
+  file-storage-microservice-network:
 
 volumes: 
   authentication-microservice-logs:
-  audio-files-microservice-file-storage:
+  file-storage-microservice-volume:
   
