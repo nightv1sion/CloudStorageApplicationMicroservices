@@ -1,7 +1,7 @@
-﻿using Audio.API.Model;
+﻿using FileStorage.API.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audio.API.Extensions;
+namespace FileStorage.API.Extensions;
 
 public static class WebApplicationExtensions
 {

@@ -1,10 +1,10 @@
-﻿using Audio.API.Model;
-using Audio.API.Services;
-using Audio.API.Services.Contracts;
-using DatabaseInfrastructure.Helper;
+﻿using DatabaseInfrastructure.Helper;
+using FileStorage.API.Model;
+using FileStorage.API.Services;
+using FileStorage.API.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 
-namespace Audio.API.Extensions;
+namespace FileStorage.API.Extensions;
 
 public static class ServicesExtensions
 {
@@ -27,7 +27,7 @@ public static class ServicesExtensions
 
     public static void ConfigureServices(this IServiceCollection services)
     {
+        services.AddScoped<IStorageService, StorageService>();
         services.AddScoped<IFileService, FileService>();
-        services.AddScoped<IAudioFileService, AudioFileService>();
     }
 }

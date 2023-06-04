@@ -1,9 +1,9 @@
-using Audio.API.DataTransferObjects;
-using Audio.API.Exceptions;
-using Audio.API.Extensions;
-using Audio.API.Model;
-using Audio.API.Services;
-using Audio.API.Services.Contracts;
+using FileStorage.API.DataTransferObjects;
+using FileStorage.API.Exceptions;
+using FileStorage.API.Extensions;
+using FileStorage.API.Model;
+using FileStorage.API.Services;
+using FileStorage.API.Services.Contracts;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Middlewares.ExceptionHandling;
 using Services.Authentication;
@@ -33,27 +33,27 @@ app.UseAuthorization();
 
 app.UseMiddleware<ExceptionHandlingMiddleware>();
 
-app.MapPost("api/upload-audio-file", async (
-    AudioFileDTO dto,
+app.MapGet("api/file/{id:guid}/download", async (
+    Guid id,
+    IFileService fileService) =>
+{
+    var (bytes, fileName) = await fileService.GetFileBytesAsync(id);
+    return Results.File(bytes, fileDownloadName: fileName);
+});
+
+app.MapPost("api/file/upload", async (
+    FileDto dto,
     HttpContext httpContext,
     IAuthenticationService authenticationService,
-    IAudioFileService audioFileService) =>
+    IFileService fileService) =>
 {
     var userId = authenticationService.GetUserIdFromHeaders(httpContext);
     if (userId is null)
     {
         throw new InvalidUserIdHeaderBadRequestException();
     }
-    await audioFileService.SaveAudioFileAsync(dto, userId.Value);
+    await fileService.SaveFileToStorageAsync(dto, userId.Value);
     return Results.Ok();
-}).Accepts<AudioFileDTO>("multipart/form-data");
-
-app.MapGet("api/audio-file/{id:guid}", async (
-    Guid id,
-    IAudioFileService audioFileService) =>
-{
-    var (bytes, fileName) = await audioFileService.GetAudioFileAsync(id);
-    return Results.File(bytes, fileDownloadName: fileName);
-});
+}).Accepts<FileDto>("multipart/form-data");
 
 app.Run();

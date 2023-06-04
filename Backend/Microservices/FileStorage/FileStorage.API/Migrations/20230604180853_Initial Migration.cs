@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace Audio.API.Migrations
+namespace FileStorage.API.Migrations
 {
     /// <inheritdoc />
-    public partial class Initialmigration : Migration
+    public partial class InitialMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "AudioFiles",
+                name: "Files",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -23,7 +23,7 @@ namespace Audio.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AudioFiles", x => x.Id);
+                    table.PrimaryKey("PK_Files", x => x.Id);
                 });
         }
 
@@ -31,7 +31,7 @@ namespace Audio.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "AudioFiles");
+                name: "Files");
         }
     }
 }

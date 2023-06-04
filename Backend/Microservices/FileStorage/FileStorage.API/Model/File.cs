@@ -1,6 +1,6 @@
-﻿namespace Audio.API.Model;
+﻿namespace FileStorage.API.Model;
 
-public class AudioFile
+public class File
 {
     public Guid Id { get; set; }
     public string FileSystemName { get; set; }
