@@ -26,31 +26,42 @@ services:
     env_file:
       - environment/authentication-microservice/database.env
   
-  file-storage-microservice-api:
-    container_name: file-storage-microservice-api
+  files-microservice-api:
+    container_name: files-microservice-api
     build:
       context: ../Backend
-      dockerfile: ../Backend/Microservices/FileStorage/FileStorage.API/Dockerfile
+      dockerfile: ../Backend/Microservices/Files/Files.API/Dockerfile
     ports:
       - "5002:80"
     depends_on:
-      - file-storage-microservice-database
+      - files-microservice-database
     networks:
-      - file-storage-microservice-network
+      - files-microservice-network
     env_file:
-      - environment/file-storage-microservice/api.env
-    volumes:
-      - file-storage-microservice-volume:/app/fileStorage
+      - environment/files-microservice/api.env
+    
         
-  file-storage-microservice-database:
+  files-microservice-database:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: file-storage-microservice-database
+    container_name: files-microservice-database
     ports:
       - "1434:1433"
     networks:
-      - file-storage-microservice-network
+      - files-microservice-network
     env_file:
-      - environment/file-storage-microservice/database.env
+      - environment/files-microservice/database.env
+  
+  storage-microservice-api:
+    container_name: storage-microservice-api
+    build:
+      context: ../Backend
+      dockerfile: ../Backend/Microservices/Storage/Storage.API/Dockerfile
+    ports:
+      - "5003:80"
+    env_file:
+      - environment/storage-microservice/api.env
+    volumes:
+      - storage-microservice-volume:/app/storage/files
   
   ocelot-api-gateway:
     container_name: ocelot-api-gateway
@@ -58,15 +69,15 @@ services:
       context: ../Backend
       dockerfile: ../Backend/ApiGateways/OcelotApiGateway/Dockerfile
     ports:
-      - "5003:80"
+      - "5004:80"
     depends_on: 
       - authentication-microservice-api
 
 networks:
   authentication-microservice-network:
-  file-storage-microservice-network:
+  files-microservice-network:
 
 volumes: 
   authentication-microservice-logs:
-  file-storage-microservice-volume:
+  storage-microservice-volume:
   
