@@ -4,5 +4,5 @@ namespace Services.Authentication;
 
 public interface IAuthenticationService
 {
-    Guid? GetUserIdFromHeaders(HttpContext context);
+    Guid GetUserIdFromHeaders(HttpContext context);
 }
