@@ -10,5 +10,10 @@ public class MappingProfile : Profile
     {
         CreateMap<UpdateFileDto, Model.File>()
             .ForMember(x => x.Id, opts => opts.Ignore());
+        CreateMap<FormFileDto, CreateFileDto>()
+            .ForMember(x => x.Extension, 
+                opts => opts.MapFrom(x => x.FileExtension));
+
+        CreateMap<CreateFileDto, File>();
     }
 }
