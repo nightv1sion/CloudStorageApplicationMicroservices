@@ -57,4 +57,15 @@ public class FileService : IFileService
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task<File> CreateFileAsync(CreateFileDto dto)
+    {
+        var entity = _mapper.Map<File>(dto);
+
+        _context.Files.Add(entity);
+
+        await _context.SaveChangesAsync();
+
+        return entity;
+    }
 }

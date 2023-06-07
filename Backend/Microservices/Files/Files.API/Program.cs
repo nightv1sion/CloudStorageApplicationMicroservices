@@ -1,4 +1,5 @@
 using System.Reflection;
+using AutoMapper;
 using Files.API.DataTransferObjects;
 using Files.API.Exceptions;
 using Files.API.Extensions;
@@ -6,9 +7,12 @@ using Files.API.Mapping;
 using Files.API.Model;
 using Files.API.Services;
 using Files.API.Services.Contracts;
+using MassTransit;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Middlewares.ExceptionHandling;
+using Models.File;
 using Services.Authentication;
+using File = Files.API.Model.File;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureDatabaseContext(builder.Configuration);
 builder.Services.ConfigureAuthentication();
-builder.Services.ConfigureServices();
+builder.Services.ConfigureServices(builder.Configuration);
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
@@ -67,5 +71,38 @@ app.MapPut("api/file", async (
     await fileService.UpdateFileAsync(userId, dto);
     return Results.Ok();
 });
+
+app.MapPost("api/upload", async (
+    FormFileDto dto,
+    HttpContext httpContext,
+    IBus bus,
+    IFileService fileService,
+    IAuthenticationService authenticationService,
+    IMapper mapper,
+    IConfiguration configuration) =>
+{
+    var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+    var createFileDto = mapper.Map<CreateFileDto>(dto);
+    createFileDto.UserId = userId;
+    var file = await fileService.CreateFileAsync(createFileDto);
+    await using var stream = new MemoryStream();
+    await dto.File.CopyToAsync(stream);
+    var bytes = stream.ToArray();
+    var fileToStorage = new Models.File.File()
+    {
+        Bytes = bytes,
+        Info = new()
+        {
+            Name = file.Name,
+            Extension = file.Extension,
+            FileSystemName = file.Id.ToString()
+        }
+    };
+
+    var uri = new Uri(configuration["RABBIT_MQ_FILE_QUEUE_PATH"]);
+    var endpoint = await bus.GetSendEndpoint(uri);
+    await endpoint.Send(fileToStorage);
+    return Results.Ok();
+}).Accepts<FormFileDto>("multipart/form-data");
 
 app.Run();
