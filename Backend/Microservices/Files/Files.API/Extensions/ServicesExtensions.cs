@@ -26,29 +26,25 @@ public static class ServicesExtensions
         }
     }
 
-    public static void ConfigureServices(this IServiceCollection services, IConfiguration configuration)
+    public static void ConfigureServices(this IServiceCollection services)
     {
         services.AddScoped<IFileService, FileService>();
+    }
 
+    public static void ConfigureMassTransit(this IServiceCollection services, IConfiguration configuration)
+    {
         services.AddMassTransit(x =>
         {
-            x.AddMassTransit(provider =>
-                provider.UsingRabbitMq((context, config) =>
+            x.UsingRabbitMq((context, config) =>
+            {
+                config.Host(configuration["RABBIT_MQ_HOSTNAME"], configuration["RABBIT_MQ_VIRTUAL_HOST"], c =>
                 {
-                    config.Host(new Uri(configuration["RABBIT_MQ_USERNAME"]), "/", c =>
-                    {
-                        c.Username(configuration["RABBIT_MQ_USERNAME"]);
-                        c.Password(configuration["RABBIT_MQ_PASSWORD"]);
-                    });
-                }));
-            /*Bus.Factory.CreateUsingRabbitMq(config =>
-                {
-                    config.Host(new Uri(configuration["RABBIT_MQ_PATH"]), "/", h =>
-                    {
-                        h.Username(configuration["RABBIT_MQ_USERNAME"]);
-                        h.Password(configuration["RABBIT_MQ_PASSWORD"]);
-                    });
-                }));*/
+                    c.Username(configuration["RABBIT_MQ_USERNAME"]);
+                    c.Password(configuration["RABBIT_MQ_PASSWORD"]);
+                });
+                
+                config.ConfigureEndpoints(context);
+            });
         });
     }
 }

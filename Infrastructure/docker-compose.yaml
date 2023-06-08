@@ -37,6 +37,7 @@ services:
       - files-microservice-database
     networks:
       - files-microservice-network
+      - rabbit-mq-network
     env_file:
       - environment/files-microservice/api.env
     
@@ -72,10 +73,23 @@ services:
       - "5004:80"
     depends_on: 
       - authentication-microservice-api
+  
+  rabbitmq:
+    image: masstransit/rabbitmq
+    hostname: rabbitmq-host
+    restart: always
+    env_file:
+      - environment/rabbit-mq/.env
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks: 
+      - rabbit-mq-network
 
 networks:
   authentication-microservice-network:
   files-microservice-network:
+  rabbit-mq-network:
 
 volumes: 
   authentication-microservice-logs:
