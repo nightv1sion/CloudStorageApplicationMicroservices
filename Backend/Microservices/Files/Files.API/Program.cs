@@ -21,7 +21,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureDatabaseContext(builder.Configuration);
 builder.Services.ConfigureAuthentication();
-builder.Services.ConfigureServices(builder.Configuration);
+builder.Services.ConfigureServices();
+builder.Services.ConfigureMassTransit(builder.Configuration);
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 
 var app = builder.Build();
@@ -99,7 +100,7 @@ app.MapPost("api/upload", async (
         }
     };
 
-    var uri = new Uri(configuration["RABBIT_MQ_FILE_QUEUE_PATH"]);
+    var uri = new Uri(configuration["RABBIT_MQ_QUEUE"]);
     var endpoint = await bus.GetSendEndpoint(uri);
     await endpoint.Send(fileToStorage);
     return Results.Ok();
