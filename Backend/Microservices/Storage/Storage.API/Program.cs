@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Services.Authentication;
 using Storage.API.DataTransferObjects;
 using Storage.API.Extensions;
 using Storage.API.Services.Contracts;
@@ -10,6 +9,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.ConfigureServices();
+builder.Services.ConfigureMassTransit(builder.Configuration);
 
 var app = builder.Build();
 

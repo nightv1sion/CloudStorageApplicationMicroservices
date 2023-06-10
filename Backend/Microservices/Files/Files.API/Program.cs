@@ -1,18 +1,9 @@
 using System.Reflection;
-using AutoMapper;
 using Files.API.DataTransferObjects;
-using Files.API.Exceptions;
 using Files.API.Extensions;
-using Files.API.Mapping;
-using Files.API.Model;
-using Files.API.Services;
 using Files.API.Services.Contracts;
-using MassTransit;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Middlewares.ExceptionHandling;
-using Models.File;
 using Services.Authentication;
-using File = Files.API.Model.File;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -76,34 +67,23 @@ app.MapPut("api/file", async (
 app.MapPost("api/upload", async (
     FormFileDto dto,
     HttpContext httpContext,
-    IBus bus,
     IFileService fileService,
-    IAuthenticationService authenticationService,
-    IMapper mapper,
-    IConfiguration configuration) =>
+    IAuthenticationService authenticationService) =>
 {
     var userId = authenticationService.GetUserIdFromHeaders(httpContext);
-    var createFileDto = mapper.Map<CreateFileDto>(dto);
-    createFileDto.UserId = userId;
-    var file = await fileService.CreateFileAsync(createFileDto);
-    await using var stream = new MemoryStream();
-    await dto.File.CopyToAsync(stream);
-    var bytes = stream.ToArray();
-    var fileToStorage = new Models.File.File()
-    {
-        Bytes = bytes,
-        Info = new()
-        {
-            Name = file.Name,
-            Extension = file.Extension,
-            FileSystemName = file.Id.ToString()
-        }
-    };
-
-    var uri = new Uri(configuration["RABBIT_MQ_QUEUE"]);
-    var endpoint = await bus.GetSendEndpoint(uri);
-    await endpoint.Send(fileToStorage);
+    await fileService.UploadFileAsync(dto, userId);
     return Results.Ok();
 }).Accepts<FormFileDto>("multipart/form-data");
+
+app.MapDelete("api/file/{id}", async (
+    Guid id,
+    IFileService fileService,
+    IAuthenticationService authenticationService,
+    HttpContext httpContext) =>
+{
+    var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+    await fileService.DeleteFileAsync(userId, id);
+    return Results.Ok();
+});
 
 app.Run();

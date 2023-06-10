@@ -31,7 +31,7 @@
     <ItemGroup>
       <ProjectReference Include="..\..\..\Shared\DatabaseInfrastructure\DatabaseInfrastructure.csproj" />
       <ProjectReference Include="..\..\..\Shared\Middlewares\Middlewares.csproj" />
-      <ProjectReference Include="..\..\..\Shared\Models\Models.csproj" />
+      <ProjectReference Include="..\..\..\Shared\MassTransitModels\MassTransitModels.csproj" />
       <ProjectReference Include="..\..\..\Shared\Services\Services.csproj" />
     </ItemGroup>
 

@@ -6,8 +6,10 @@ namespace Files.API.Services.Contracts;
 
 public interface IFileService
 {
-    public Task<Model.File> GetFileAsync(Guid userId, Guid fileId);
-    public Task<ICollection<Model.File>> GetFilesByUserIdAsync(Guid userId);
-    public Task UpdateFileAsync(Guid userId, UpdateFileDto dto);
-    public Task<File> CreateFileAsync(CreateFileDto dto);
+    Task<Model.File> GetFileAsync(Guid userId, Guid fileId);
+    Task<ICollection<Model.File>> GetFilesByUserIdAsync(Guid userId);
+    Task UpdateFileAsync(Guid userId, UpdateFileDto dto);
+    Task DeleteFileAsync(Guid userId, Guid fileId);
+    Task<File> CreateFileAsync(CreateFileDto dto);
+    Task UploadFileAsync(FormFileDto dto, Guid userId);
 }
