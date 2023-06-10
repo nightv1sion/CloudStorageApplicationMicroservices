@@ -63,6 +63,8 @@ services:
       - environment/storage-microservice/api.env
     volumes:
       - storage-microservice-volume:/app/storage/files
+    networks:
+      - rabbit-mq-network
   
   ocelot-api-gateway:
     container_name: ocelot-api-gateway
