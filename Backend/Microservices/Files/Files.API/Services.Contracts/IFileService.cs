@@ -12,4 +12,5 @@ public interface IFileService
     Task DeleteFileAsync(Guid userId, Guid fileId);
     Task<File> CreateFileAsync(CreateFileDto dto);
     Task UploadFileAsync(FormFileDto dto, Guid userId);
+    Task<DownloadFileDto> DownloadFileAsync(Guid userId, Guid id);
 }

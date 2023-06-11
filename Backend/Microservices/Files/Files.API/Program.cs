@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Security.Cryptography;
 using Files.API.DataTransferObjects;
 using Files.API.Extensions;
 using Files.API.Services.Contracts;
@@ -64,7 +65,7 @@ app.MapPut("api/file", async (
     return Results.Ok();
 });
 
-app.MapPost("api/upload", async (
+app.MapPost("api/file/upload", async (
     FormFileDto dto,
     HttpContext httpContext,
     IFileService fileService,
@@ -74,6 +75,17 @@ app.MapPost("api/upload", async (
     await fileService.UploadFileAsync(dto, userId);
     return Results.Ok();
 }).Accepts<FormFileDto>("multipart/form-data");
+
+app.MapGet("api/file/{id:guid}/download", async (
+    Guid id,
+    HttpContext httpContext,
+    IAuthenticationService authenticationService,
+    IFileService fileService) =>
+{
+    var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+    var dto = await fileService.DownloadFileAsync(userId, id);
+    return Results.File(dto.Bytes, "multipart/form-data", dto.Name + dto.Extension);
+});
 
 app.MapDelete("api/file/{id}", async (
     Guid id,

@@ -19,6 +19,7 @@ public static class ServiceExtensions
         {
             x.AddConsumer<FileCreatedConsumer>();
             x.AddConsumer<FileDeletedConsumer>();
+            x.AddConsumer<RetrieveFileConsumer>();
             x.UsingRabbitMq(
                 (context, config) =>
                 {
@@ -38,6 +39,11 @@ public static class ServiceExtensions
                         endpoint =>
                         {
                             endpoint.ConfigureConsumer<FileDeletedConsumer>(context);
+                        });
+                    config.ReceiveEndpoint("retrieve-file-command",
+                        endpoint =>
+                        {
+                            endpoint.ConfigureConsumer<RetrieveFileConsumer>(context);
                         });
                 });
         });
