@@ -4,6 +4,7 @@ using Files.API.Services;
 using Files.API.Services.Contracts;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Models.File;
 
 namespace Files.API.Extensions;
 
@@ -35,6 +36,7 @@ public static class ServicesExtensions
     {
         services.AddMassTransit(x =>
         {
+            //x.AddRequestClient<RetrieveFile>();
             x.UsingRabbitMq((context, config) =>
             {
                 config.Host(configuration["RABBIT_MQ_HOSTNAME"], configuration["RABBIT_MQ_VIRTUAL_HOST"], c =>

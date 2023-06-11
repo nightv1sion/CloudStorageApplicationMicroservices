@@ -6,6 +6,7 @@ using Files.API.Services.Contracts;
 using MassTransit;
 using MassTransitModels.File;
 using Microsoft.EntityFrameworkCore;
+using Models.File;
 using File = Files.API.Model.File;
 
 namespace Files.API.Services;
@@ -15,15 +16,18 @@ public class FileService : IFileService
     private readonly ApplicationDatabaseContext _context;
     private readonly IMapper _mapper;
     private readonly IPublishEndpoint _publishEndpoint;
+    private readonly IRequestClient<RetrieveFile> _client;
 
     public FileService(
         ApplicationDatabaseContext context,
         IMapper mapper,
-        IPublishEndpoint publishEndpoint)
+        IPublishEndpoint publishEndpoint,
+        IRequestClient<RetrieveFile> client)
     {
         _context = context;
         _mapper = mapper;
         _publishEndpoint = publishEndpoint;
+        _client = client;
     }
     public async Task<Model.File> GetFileAsync(Guid userId, Guid fileId)
     {
@@ -105,5 +109,22 @@ public class FileService : IFileService
             Name = file.Id.ToString(),
             Extension = file.Extension,
         });
+    }
+
+    public async Task<DownloadFileDto> DownloadFileAsync(Guid userId, Guid id)
+    {
+        var file = await GetFileAsync(userId, id);
+        var response = await _client.GetResponse<RetrieveFileResult>(new
+        {
+            Name = file.Id.ToString(),
+            Extension = file.Extension
+        });;
+
+        return new()
+        {
+            Bytes = response.Message.Bytes,
+            Name = file.Name,
+            Extension = file.Extension
+        };
     }
 }
