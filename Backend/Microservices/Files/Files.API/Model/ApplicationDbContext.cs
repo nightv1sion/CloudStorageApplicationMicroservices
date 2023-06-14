@@ -9,5 +9,5 @@ public class ApplicationDatabaseContext : DbContext
         
     }
 
-    public DbSet<File> Files { get; set; }
+    public virtual DbSet<File> Files { get; set; }
 }
