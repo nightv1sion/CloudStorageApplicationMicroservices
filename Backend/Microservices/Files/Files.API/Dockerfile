@@ -11,6 +11,11 @@ WORKDIR /src/Files/Files.API
 RUN dotnet restore "Files.API.csproj"
 COPY /Microservices/Files/Files.API .
 
+WORKDIR /src/Files/Tests/Files.API.UnitTests
+COPY /Microservices/Files/Tests/Files.API.UnitTests .
+RUN dotnet restore "Files.API.UnitTests.csproj"
+RUN dotnet test "Files.API.UnitTests.csproj" -c Release
+
 WORKDIR /src/Files/Files.API
 RUN dotnet build "Files.API.csproj" -c Release -o /app/build
 

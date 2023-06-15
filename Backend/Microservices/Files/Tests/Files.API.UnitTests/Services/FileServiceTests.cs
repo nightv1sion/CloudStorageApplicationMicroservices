@@ -61,4 +61,35 @@ public class FileServiceTests
         
         Assert.Equal(file, result);
     }
+    [Fact]
+    public async Task FileService_GetFilesByUserIdAsync_ReturnsValidFiles()
+    {
+        var fileId = Guid.NewGuid();
+        var userId = Guid.NewGuid();
+        var validFiles = new List<File>()
+        {
+            new() { UserId = userId },
+            new() { UserId = userId },
+            new() { UserId = userId },
+            new() { UserId = userId },
+        };
+
+        var invalidFiles = new List<File>()
+        {
+            new() { UserId = Guid.NewGuid() },
+            new() { UserId = Guid.NewGuid() },
+            new() { UserId = Guid.NewGuid() },
+        };
+
+        var files = validFiles.Concat(invalidFiles).ToList();
+        
+        _context.Setup<DbSet<File>>(
+                expression: x => x.Files)
+            .ReturnsDbSet(files);
+
+        var result = await _service.GetFilesByUserIdAsync(userId);
+        
+        Assert.Equal(validFiles.Count, result.Count);
+        Assert.True(result.SequenceEqual(validFiles));
+    }
 }
