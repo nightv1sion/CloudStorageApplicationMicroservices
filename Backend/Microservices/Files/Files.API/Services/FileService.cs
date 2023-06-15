@@ -62,9 +62,7 @@ public class FileService : IFileService
     }
     public async Task UpdateFileAsync(Guid userId, UpdateFileDto dto)
     {
-        var file = await _context.Files
-            .Where(x => x.UserId == userId)
-            .FirstOrDefaultAsync(x => x.Id == dto.Id);
+        var file = await GetFileAsync(userId, dto.Id);
 
         if (file is null)
         {
@@ -78,8 +76,7 @@ public class FileService : IFileService
 
     public async Task DeleteFileAsync(Guid userId, Guid fileId)
     {
-        var file = await _context.Files.FirstOrDefaultAsync(
-            x => x.UserId == userId && x.Id == fileId);
+        var file = await GetFileAsync(userId, fileId);
 
         if (file == null)
         {

@@ -1,4 +1,5 @@
 ﻿using Storage.API.DataTransferObjects;
+using Storage.API.Exceptions;
 using Storage.API.Services.Contracts;
 
 namespace Storage.API.Services;
@@ -15,7 +16,7 @@ public class StorageService : IStorageService
     }
     public async Task<byte[]> GetFileBytesAsync(string fileNameWithExtension)
     {
-        var filePath = Path.Combine(_storagePath, fileNameWithExtension);
+        var filePath = GetFilePathAndCheckIfFileExists(fileNameWithExtension);
         var bytes = await File.ReadAllBytesAsync(filePath);
         return bytes;
     }
@@ -24,19 +25,34 @@ public class StorageService : IStorageService
         var file = dto.File;
         var extension = Path.GetExtension(file.FileName);
         var name = dto.Name;
-        var path = Path.Combine(_storagePath, name + extension);
+        var path = GetFilePathAndCheckIfFileExists(name + extension);
         await using var fileStream = new FileStream(path, FileMode.Create);
         await file.CopyToAsync(fileStream);
     }
     public async Task SaveFileBytesAsync(byte[] fileBytes, string fileName, string extension)
     {
-        var path = Path.Combine(_storagePath, fileName + extension);
+        var path = GetFilePathAndCheckIfFileExists(fileName + extension);
         await File.WriteAllBytesAsync(path, fileBytes);
     }
     public void DeleteFile(string fileName, string extension)
     {
-        var path = Path.Combine(_storagePath, fileName + extension);
+        var path = GetFilePathAndCheckIfFileExists(fileName + extension);
         File.Delete(path);
+    }
+
+    private string GetFilePathAndCheckIfFileExists(string fileName)
+    {
+        var filePath = Path.Combine(_storagePath, fileName);
+        if (CheckIfFileExists(filePath) == false)
+        {
+            throw new InvalidFileNameBadRequestException(fileName);
+        }
+
+        return filePath;
+    }
+    private bool CheckIfFileExists(string filePath)
+    {
+        return File.Exists(filePath);
     }
     private string GetFolderPath()
     {
