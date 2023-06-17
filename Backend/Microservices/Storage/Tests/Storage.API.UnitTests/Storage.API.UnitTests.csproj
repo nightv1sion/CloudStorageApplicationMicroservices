@@ -23,4 +23,8 @@
         </PackageReference>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\Storage.API\Storage.API.csproj" />
+    </ItemGroup>
+
 </Project>
