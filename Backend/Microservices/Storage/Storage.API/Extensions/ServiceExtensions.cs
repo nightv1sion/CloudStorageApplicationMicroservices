@@ -10,6 +10,7 @@ public static class ServiceExtensions
     public static void ConfigureServices(this IServiceCollection services)
     {
         services.AddScoped<IStorageService, StorageService>();
+        services.AddScoped<IFileSystemService, FileSystemService>();
     }
 
     public static void ConfigureMassTransit(

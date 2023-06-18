@@ -8,16 +8,20 @@ public class StorageService : IStorageService
 {
     private readonly IConfiguration _configuration;
     private readonly string _storagePath;
+    private readonly IFileSystemService _fileSystemService;
 
-    public StorageService(IConfiguration configuration)
+    public StorageService(
+        IConfiguration configuration, 
+        IFileSystemService fileSystemService)
     {
         _configuration = configuration;
+        _fileSystemService = fileSystemService;
         _storagePath = GetFolderPath();
     }
     public async Task<byte[]> GetFileBytesAsync(string fileNameWithExtension)
     {
-        var filePath = GetFilePathAndCheckIfFileExists(fileNameWithExtension);
-        var bytes = await File.ReadAllBytesAsync(filePath);
+        var filePath = GetFilePath(fileNameWithExtension);
+        var bytes = await _fileSystemService.GetFileBytesAsync(filePath);
         return bytes;
     }
     public async Task SaveFormFileAsync(FormFileDto dto)
@@ -25,46 +29,32 @@ public class StorageService : IStorageService
         var file = dto.File;
         var extension = Path.GetExtension(file.FileName);
         var name = dto.Name;
-        var path = GetFilePathAndCheckIfFileExists(name + extension);
+        var path = GetFilePath(name + extension);
         await using var fileStream = new FileStream(path, FileMode.Create);
         await file.CopyToAsync(fileStream);
     }
     public async Task SaveFileBytesAsync(byte[] fileBytes, string fileName, string extension)
     {
-        var path = GetFilePathAndCheckIfFileExists(fileName + extension);
-        await File.WriteAllBytesAsync(path, fileBytes);
+        var path = GetFilePath(fileName + extension);
+        await _fileSystemService.SaveFileBytesAsync(fileBytes, path);
     }
     public void DeleteFile(string fileName, string extension)
     {
-        var path = GetFilePathAndCheckIfFileExists(fileName + extension);
-        File.Delete(path);
+        var path = GetFilePath(fileName + extension);
+        _fileSystemService.DeleteFile(path);
     }
-
-    private string GetFilePathAndCheckIfFileExists(string fileName)
+    private string GetFilePath(string fileName)
     {
         var filePath = Path.Combine(_storagePath, fileName);
-        if (CheckIfFileExists(filePath) == false)
-        {
-            throw new InvalidFileNameBadRequestException(fileName);
-        }
-
         return filePath;
-    }
-    private bool CheckIfFileExists(string filePath)
-    {
-        return File.Exists(filePath);
     }
     private string GetFolderPath()
     {
         var storagePath = _configuration["STORAGEPATH"];
-        CheckAndCreateFolder(storagePath);
-        return Path.Combine(Directory.GetCurrentDirectory(), storagePath);
-    }
-    private void CheckAndCreateFolder(string path)
-    {
-        if (Directory.Exists(path) is false)
+        if (_fileSystemService.CheckIfDirectoryExists(storagePath) is false)
         {
-            Directory.CreateDirectory(path);
+            _fileSystemService.CreateDirectory(storagePath);
         }
+        return Path.Combine(Directory.GetCurrentDirectory(), storagePath);
     }
 }

@@ -8,6 +8,15 @@ public class FileSystemService : IFileSystemService
     public FileSystemService()
     {
     }
+    public async Task<byte[]> GetFileBytesAsync(string filePath)
+    {
+        if (CheckIfFileExists(filePath) is false)
+        {
+            throw new InvalidFileNameBadRequestException(filePath);
+        }
+        var bytes = await File.ReadAllBytesAsync(filePath);
+        return bytes;
+    }
     public async Task SaveFileBytesAsync(byte[] fileBytes, string filePath)
     {
         if (CheckIfFileExists(filePath) is true)
@@ -16,10 +25,13 @@ public class FileSystemService : IFileSystemService
         }
         await File.WriteAllBytesAsync(filePath, fileBytes);
     }
-    public async Task<byte[]> GetFileBytesAsync(string filePath)
+    public void DeleteFile(string filePath)
     {
-        var bytes = await File.ReadAllBytesAsync(filePath);
-        return bytes;
+        if (CheckIfFileExists(filePath) is false)
+        {
+            throw new InvalidFileNameBadRequestException(filePath);
+        }
+        File.Delete(filePath);
     }
     public bool CheckIfFileExists(string filePath)
     {
