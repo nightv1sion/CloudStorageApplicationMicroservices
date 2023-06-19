@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Storage.API.Exceptions;
 using Storage.API.Services;
@@ -10,11 +11,12 @@ public class StorageServiceTests
 {
     private readonly Mock<IFileSystemService> _fileSystemServiceMock;
     private readonly IStorageService _storageService;
+    private readonly Mock<ILogger<StorageService>> _storageServiceLoggerMock;
 
     public StorageServiceTests()
     {
-        _fileSystemServiceMock = new Mock<IFileSystemService>(() => new FileSystemService());
-        
+        _fileSystemServiceMock = new Mock<IFileSystemService>();
+        _storageServiceLoggerMock = new Mock<ILogger<StorageService>>();
         Mock<IConfiguration> configuration = new();
         configuration
             .SetupGet(x => x[It.IsAny<string>()])
@@ -22,8 +24,8 @@ public class StorageServiceTests
         
         _storageService = new StorageService(
             configuration.Object, 
-            _fileSystemServiceMock.Object);
-       
+            _fileSystemServiceMock.Object,
+            _storageServiceLoggerMock.Object);
     }
 
     [Fact]

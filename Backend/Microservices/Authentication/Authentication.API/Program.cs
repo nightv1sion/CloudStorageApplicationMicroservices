@@ -19,6 +19,8 @@ builder.Services.ConfigureServices();
 
 var app = builder.Build();
 
+app.UseSerilogRequestLogging();
+
 app.MigrateDatabase();
 
 if (app.Environment.IsDevelopment())
@@ -26,8 +28,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
-app.UseSerilogRequestLogging();
 
 app.UseHttpsRedirection();
 

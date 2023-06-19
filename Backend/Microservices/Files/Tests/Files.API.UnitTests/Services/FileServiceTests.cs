@@ -5,6 +5,7 @@ using Files.API.Services;
 using Files.API.Services.Contracts;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Models.File;
 using Moq;
 using Moq.EntityFrameworkCore;
@@ -19,6 +20,7 @@ public class FileServiceTests
     private readonly Mock<IMapper> _mapper;
     private readonly Mock<IPublishEndpoint> _publishEndpoint;
     private readonly Mock<IRequestClient<RetrieveFile>> _client;
+    private readonly Mock<ILogger<FileService>> _logger;
 
     public FileServiceTests()
     {
@@ -27,8 +29,9 @@ public class FileServiceTests
         _mapper = new Mock<IMapper>();
         _publishEndpoint = new Mock<IPublishEndpoint>();
         _client = new Mock<IRequestClient<RetrieveFile>>();
+        _logger = new Mock<ILogger<FileService>>();
         _service = new FileService(
-            _context.Object, _mapper.Object, _publishEndpoint.Object, _client.Object);
+            _context.Object, _mapper.Object, _publishEndpoint.Object, _client.Object, _logger.Object);
     }
 
     [Fact]

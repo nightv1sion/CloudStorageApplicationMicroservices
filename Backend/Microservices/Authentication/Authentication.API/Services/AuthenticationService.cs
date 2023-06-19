@@ -26,7 +26,7 @@ public class AuthenticationService : IAuthenticationService
         _tokenService = tokenService;
         _configuration = configuration;
         _logger = logger;
-        _logger.LogInformation("Authentication Service called");
+        _logger.LogInformation("Authentication Service was called");
     }
     public async Task<IdentityResult> RegisterUserAsync(RegisterUserDTO dto)
     {
@@ -38,7 +38,7 @@ public class AuthenticationService : IAuthenticationService
         var result = await _userManager.CreateAsync(user, dto.Password);
 
         _logger.LogInformation(
-            $"User with username '{user.UserName}' successfully registered: {result.Succeeded}");
+            $"User with username '{user.UserName}' was successfully registered: {result.Succeeded}");
         return result;
     }
 
@@ -84,7 +84,7 @@ public class AuthenticationService : IAuthenticationService
             ValidTo = token.ValidTo
         };
         
-        _logger.LogInformation($"User '{user.UserName} successfully logged in'");
+        _logger.LogInformation($"User '{user.UserName} was successfully logged in'");
         return result;
     }
 
@@ -123,7 +123,7 @@ public class AuthenticationService : IAuthenticationService
             RefreshToken = newRefreshToken
         };
        
-        _logger.LogInformation($"User '{user.UserName}': refresh token successfully generated");
+        _logger.LogInformation($"User '{user.UserName}': was refresh token successfully generated");
         return newTokenDto;
     }
 
