@@ -17,19 +17,23 @@ public class FileService : IFileService
     private readonly IMapper _mapper;
     private readonly IPublishEndpoint _publishEndpoint;
     private readonly IRequestClient<RetrieveFile> _client;
+    private readonly ILogger<FileService> _logger;
 
     public FileService(
         ApplicationDatabaseContext context,
         IMapper mapper,
         IPublishEndpoint publishEndpoint,
-        IRequestClient<RetrieveFile> client)
+        IRequestClient<RetrieveFile> client,
+        ILogger<FileService> logger)
     {
         _context = context;
         _mapper = mapper;
         _publishEndpoint = publishEndpoint;
         _client = client;
+        _logger = logger;
+        _logger.LogInformation("File Service called");
     }
-    public async Task<Model.File> GetFileAsync(Guid userId, Guid fileId)
+    public async Task<File> GetFileAsync(Guid userId, Guid fileId)
     {
         var file = await _context.Files
             .Where(x => x.UserId == userId)
@@ -42,7 +46,7 @@ public class FileService : IFileService
 
         return file;
     }
-    public async Task<ICollection<Model.File>> GetFilesByUserIdAsync(Guid userId)
+    public async Task<ICollection<File>> GetFilesByUserIdAsync(Guid userId)
     {
         var files = await _context.Files
             .Where(x => x.UserId == userId)
@@ -55,8 +59,10 @@ public class FileService : IFileService
         var entity = _mapper.Map<File>(dto);
 
         _context.Files.Add(entity);
-
+        
         await _context.SaveChangesAsync();
+        
+        _logger.LogInformation($"File with id: {entity.Id} created");
 
         return entity;
     }
@@ -72,6 +78,8 @@ public class FileService : IFileService
         _mapper.Map(dto, file);
 
         await _context.SaveChangesAsync();
+        
+        _logger.LogInformation($"File with id: {file.Id} was updated");
     }
 
     public async Task DeleteFileAsync(Guid userId, Guid fileId)
@@ -91,6 +99,8 @@ public class FileService : IFileService
         
         _context.Files.Remove(file);
         await _context.SaveChangesAsync();
+        
+        _logger.LogInformation($"File with id: {file.Id} was deleted");
     }
     public async Task UploadFileAsync(FormFileDto dto, Guid userId)
     {
@@ -106,11 +116,15 @@ public class FileService : IFileService
             Name = file.Id.ToString(),
             Extension = file.Extension,
         });
+        _logger.LogInformation("File created event published to RabbitMQ");
     }
 
     public async Task<DownloadFileDto> DownloadFileAsync(Guid userId, Guid id)
     {
         var file = await GetFileAsync(userId, id);
+        
+        _logger.LogInformation("Retrieve request to RabbitMQ");
+        
         var response = await _client.GetResponse<RetrieveFileResult>(new
         {
             Name = file.Id.ToString(),

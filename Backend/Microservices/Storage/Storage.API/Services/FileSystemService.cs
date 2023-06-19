@@ -5,8 +5,13 @@ namespace Storage.API.Services;
 
 public class FileSystemService : IFileSystemService
 {
-    public FileSystemService()
+    private readonly ILogger<FileSystemService> _logger;
+
+    public FileSystemService(
+        ILogger<FileSystemService> logger)
     {
+        _logger = logger;
+        _logger.LogInformation($"File system service was called");
     }
     public async Task<byte[]> GetFileBytesAsync(string filePath)
     {
@@ -15,6 +20,7 @@ public class FileSystemService : IFileSystemService
             throw new InvalidFileNameBadRequestException(filePath);
         }
         var bytes = await File.ReadAllBytesAsync(filePath);
+        _logger.LogInformation($"Bytes of file {filePath} were read");
         return bytes;
     }
     public async Task SaveFileBytesAsync(byte[] fileBytes, string filePath)
@@ -23,6 +29,7 @@ public class FileSystemService : IFileSystemService
         {
             throw new FileExistsBadRequestException(filePath);
         }
+        _logger.LogInformation($"Bytes of {filePath} file were wrote");
         await File.WriteAllBytesAsync(filePath, fileBytes);
     }
     public void DeleteFile(string filePath)

@@ -14,7 +14,7 @@ services:
     env_file:
       - environment/authentication-microservice/api.env
     volumes:
-      - authentication-microservice-logs:/logs
+      - logs:/logs
 
   authentication-microservice-database:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -40,7 +40,8 @@ services:
       - rabbit-mq-network
     env_file:
       - environment/files-microservice/api.env
-    
+    volumes:
+      - logs:/logs
         
   files-microservice-database:
     image: mcr.microsoft.com/mssql/server:2022-latest
@@ -63,6 +64,7 @@ services:
       - environment/storage-microservice/api.env
     volumes:
       - storage-microservice-volume:/app/storage/files
+      - logs:/logs
     networks:
       - rabbit-mq-network
   
@@ -73,8 +75,8 @@ services:
       dockerfile: ../Backend/ApiGateways/OcelotApiGateway/Dockerfile
     ports:
       - "5004:80"
-    depends_on: 
-      - authentication-microservice-api
+    volumes:
+      - logs:/logs
   
   rabbitmq:
     image: masstransit/rabbitmq
@@ -94,6 +96,6 @@ networks:
   rabbit-mq-network:
 
 volumes: 
-  authentication-microservice-logs:
+  logs:
   storage-microservice-volume:
   

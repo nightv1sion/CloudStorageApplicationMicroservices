@@ -19,7 +19,7 @@ public class TokenService : ITokenService
     {
         _configuration = configuration;
         _logger = logger;
-        _logger.LogInformation("Token Service called");
+        _logger.LogInformation("Token Service was called");
     }
     public JwtSecurityToken CreateToken(List<Claim> authClaims)
     {
@@ -39,7 +39,7 @@ public class TokenService : ITokenService
         var token = new JwtSecurityToken(expires: expiredDateTime, claims: authClaims,
             signingCredentials: signingCredentials);
         
-        _logger.LogInformation("Token successfully created");
+        _logger.LogInformation("Token was successfully created");
         return token;    
 ;    }
 
