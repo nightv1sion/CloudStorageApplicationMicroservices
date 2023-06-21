@@ -1,4 +1,6 @@
-﻿namespace Files.API.Model;
+﻿using Files.API.Model.Enums;
+
+namespace Files.API.Model;
 
 public class File
 {
@@ -6,4 +8,5 @@ public class File
     public string Name { get; set; }
     public string Extension { get; set; }
     public Guid UserId { get; set; }
+    public UploadingStatus UploadingStatus { get; set; }
 }

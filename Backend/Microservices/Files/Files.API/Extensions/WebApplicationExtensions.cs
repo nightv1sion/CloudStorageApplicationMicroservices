@@ -2,7 +2,6 @@
 using Microsoft.EntityFrameworkCore;
 
 namespace Files.API.Extensions;
-
 public static class WebApplicationExtensions
 {
     public static void MigrateDatabase(this WebApplication app)
