@@ -1,4 +1,5 @@
 ﻿using MassTransit;
+using MassTransit.Configuration;
 using Storage.API.MassTransit.Consumers;
 using Storage.API.Services;
 using Storage.API.Services.Contracts;
@@ -34,11 +35,21 @@ public static class ServiceExtensions
                     config.ReceiveEndpoint("file-created-event",
                         endpoint =>
                         {
+                            endpoint.UseMessageRetry(retryConfig =>
+                            {
+                                retryConfig.SetRetryPolicy(
+                                    policy=> policy.Interval(5, TimeSpan.FromSeconds(30)));
+                            });
                             endpoint.ConfigureConsumer<FileCreatedConsumer>(context);
                         });
                     config.ReceiveEndpoint("file-deleted-event",
                         endpoint =>
                         {
+                            endpoint.UseMessageRetry(retryConfig =>
+                            {
+                                retryConfig.SetRetryPolicy(
+                                    policy=> policy.Interval(5, TimeSpan.FromSeconds(30)));
+                            });
                             endpoint.ConfigureConsumer<FileDeletedConsumer>(context);
                         });
                     config.ReceiveEndpoint("retrieve-file-command",

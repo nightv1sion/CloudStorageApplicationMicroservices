@@ -1,4 +1,5 @@
 ﻿using DatabaseInfrastructure.Helper;
+using Files.API.MassTransit.Consumers;
 using Files.API.Model;
 using Files.API.Services;
 using Files.API.Services.Contracts;
@@ -36,7 +37,7 @@ public static class ServicesExtensions
     {
         services.AddMassTransit(x =>
         {
-            //x.AddRequestClient<RetrieveFile>();
+            x.AddConsumer<FileCreatedFaultConsumer>();
             x.UsingRabbitMq((context, config) =>
             {
                 config.Host(configuration["RABBIT_MQ_HOSTNAME"], configuration["RABBIT_MQ_VIRTUAL_HOST"], c =>
