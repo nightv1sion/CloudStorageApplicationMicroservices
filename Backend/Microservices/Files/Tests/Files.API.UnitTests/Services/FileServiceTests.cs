@@ -35,7 +35,7 @@ public class FileServiceTests
     }
 
     [Fact]
-    public async Task FileService_GetFileAsync_ThrowsInvalidFileIdBadRequest()
+    public async Task GetFile_NotExistingFileId_ThrowsInvalidFileIdBadRequest()
     {
         _context.Setup<DbSet<File>>(expression: x =>
             x.Files)
@@ -46,7 +46,7 @@ public class FileServiceTests
         await Assert.ThrowsAsync<InvalidFileIdBadRequest>(func);
     }
     [Fact]
-    public async Task FileService_GetFileAsync_ReturnsValidFile()
+    public async Task GetFile_ExistingFileId_ReturnsValidFile()
     {
         var fileId = Guid.NewGuid();
         var userId = Guid.NewGuid();
@@ -65,7 +65,7 @@ public class FileServiceTests
         Assert.Equal(file, result);
     }
     [Fact]
-    public async Task FileService_GetFilesByUserIdAsync_ReturnsValidFiles()
+    public async Task GetFilesByUserId_UserIdWithFiles_ReturnsValidFiles()
     {
         var fileId = Guid.NewGuid();
         var userId = Guid.NewGuid();

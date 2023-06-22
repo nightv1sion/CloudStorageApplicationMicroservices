@@ -12,8 +12,7 @@ RUN dotnet restore "Storage.API.csproj"
 
 WORKDIR "/src/Microservices/Storage/Tests/Storage.API.UnitTests"
 COPY "/Microservices/Storage/Tests/Storage.API.UnitTests" .
-RUN dotnet restore "Storage.API.UnitTests.csproj"
-RUN dotnet test "Storage.API.UnitTests.csproj" -c Release
+RUN dotnet test -c Release
 
 COPY . .
 WORKDIR "/src/Microservices/Storage/Storage.API"
