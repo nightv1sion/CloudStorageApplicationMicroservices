@@ -38,6 +38,7 @@ public static class ServicesExtensions
         services.AddMassTransit(x =>
         {
             x.AddConsumer<FileCreatedFaultConsumer>();
+            x.AddConsumer<FileSavedConsumer>();
             x.UsingRabbitMq((context, config) =>
             {
                 config.Host(configuration["RABBIT_MQ_HOSTNAME"], configuration["RABBIT_MQ_VIRTUAL_HOST"], c =>
