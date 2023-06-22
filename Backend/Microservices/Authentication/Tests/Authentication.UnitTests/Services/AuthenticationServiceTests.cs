@@ -38,7 +38,7 @@ public class AuthenticationServiceTests
     }
 
     [Fact]
-    public async Task AuthenticationService_RegisterUserAsync_ReturnsSucceededIdentityResult()
+    public async Task RegisterUser_CreateUserWithValidCredentials_ReturnsSucceededIdentityResult()
     {
         // Arrange
         var dto = new RegisterUserDTO()
@@ -58,7 +58,7 @@ public class AuthenticationServiceTests
     }
     
     [Fact]
-    public async Task AuthenticationService_RegisterUserAsync_ReturnsFailedIdentityResult()
+    public async Task RegisterUser_CreateUserWithInvalidCredentials_ReturnsFailedIdentityResult()
     {
         // Arrange
         var dto = new RegisterUserDTO()
@@ -78,7 +78,7 @@ public class AuthenticationServiceTests
     }
 
     [Fact]
-    public async Task AuthenticationSerivce_LoginUserAsync_ThrowsInvalidUserNameUnauthorized_WhenUserDoesNotExist()
+    public async Task LoginUser_LoginWithNotExistingUsername_ThrowsInvalidUserNameUnauthorized()
     {
         // Arrange
         var dto = new LoginUserDTO()
@@ -98,7 +98,7 @@ public class AuthenticationServiceTests
 
     [Fact]
     public async Task
-        AuthenticationService_LoginUserAsync_ThrowsInvalidUserPasswordUnauthorized_WhenUserPasswordIsInvalid()
+        LoginUser_LoginWithInvalidPassword_ThrowsInvalidUserPasswordUnauthorized()
     {
         // Arrange
         var dto = new LoginUserDTO()
@@ -120,7 +120,7 @@ public class AuthenticationServiceTests
     }
     [Fact]
     public async Task
-        AuthenticationService_LoginUserAsync_ThrowsInvalidOperationException_WhenTokenValidityInMinutesIsInvalid()
+        LoginUser_InvalidRefreshTokenValidityInDaysEnvironmentVariable_ThrowsInvalidOperationException()
     {
         // Arrange
         var dto = new LoginUserDTO()
@@ -144,7 +144,7 @@ public class AuthenticationServiceTests
     }
     [Fact]
     public async Task
-        AuthenticationService_LoginUserAsync_ThrowsInvalidOperationException_WhenTokenValidityInMinutesIsNotPresent()
+        LoginUser_NotPresentTokenValidityInMinutesEnvironmentVariable_ThrowsInvalidOperationException()
     {
         // Arrange
         var dto = new LoginUserDTO()
@@ -168,7 +168,7 @@ public class AuthenticationServiceTests
     
     [Fact]
     public async Task
-        AuthenticationService_GetRefreshTokenAsync_ThrowsInvalidAccessTokenBadRequestException()
+        GetRefreshToken_InvalidAccessToken_ThrowsInvalidAccessTokenBadRequestException()
     {
         // Arrange
         var dto = new TokenDTO()
@@ -190,7 +190,7 @@ public class AuthenticationServiceTests
     }
     [Fact]
     public async Task
-        AuthenticationService_GetRefreshTokenAsync_ThrowsInvalidRefreshTokenBadRequestException()
+        GetRefreshToken_InvalidRefreshToken_ThrowsInvalidRefreshTokenBadRequestException()
     {
         // Arrange
         var refreshToken = "refreshToken";
@@ -216,7 +216,7 @@ public class AuthenticationServiceTests
     }
     [Fact]
     public async Task
-        AuthenticationService_GetRefreshTokenAsync_ThrowsRefreshTokenIsExpiredBadRequest()
+        GetRefreshToken_ExpiredRefreshToken_ThrowsRefreshTokenIsExpiredBadRequest()
     {
         // Arrange
         var refreshToken = "refreshToken";

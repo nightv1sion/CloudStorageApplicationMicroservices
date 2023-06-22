@@ -29,7 +29,7 @@ public class StorageServiceTests
     }
 
     [Fact]
-    public void StorageService_GetFileBytesAsync_ThrowsInvalidFileNameBadRequestException()
+    public void GetFileBytes_InvalidFileName_ThrowsInvalidFileNameBadRequestException()
     {
         _fileSystemServiceMock.Setup(
                 x => x.CheckIfFileExists(It.IsAny<string>()))
@@ -42,7 +42,7 @@ public class StorageServiceTests
     }
     
     [Fact]
-    public void StorageService_SaveFileBytesAsync_ThrowsInvalidFileNameBadRequestException()
+    public void SaveFileBytes_FileNameExists_ThrowsInvalidFileNameBadRequestException()
     {
         _fileSystemServiceMock.Setup(
                 x => x.CheckIfFileExists(It.IsAny<string>()))

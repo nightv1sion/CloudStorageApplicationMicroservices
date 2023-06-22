@@ -13,8 +13,7 @@ COPY "/Microservices/Authentication/Authentication.API" .
 
 WORKDIR "/src/Authentication/Tests/Authentication.UnitTests"
 COPY "/Microservices/Authentication/Tests/Authentication.UnitTests" .
-RUN dotnet restore "Authentication.UnitTests.csproj"
-RUN dotnet test "Authentication.UnitTests.csproj" -c Release
+RUN dotnet test -c Release
 
 WORKDIR "/src/Authentication/Authentication.API/"
 RUN dotnet build "Authentication.API.csproj" -c Release -o "/app/build"

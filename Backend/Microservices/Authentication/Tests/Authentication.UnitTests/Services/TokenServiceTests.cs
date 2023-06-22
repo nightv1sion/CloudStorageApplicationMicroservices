@@ -28,7 +28,7 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void TokenService_CreateToken_ReturnsValidJWTSecurityToken()
+    public void CreateToken_ValidCredentials_ReturnsValidJWTSecurityToken()
     {
         // Arrange
         var jwtSecret = "some jwt secret key";
@@ -56,7 +56,7 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void TokenService_CreateToken_ThrowsInvalidOperationExceptions_WhenTokenValidityInMinutesIsNotPresent()
+    public void CreateToken_NotExistingTokenValidityEnvironmentVariable_ThrowsInvalidOperationExceptions()
     {
         // Arrange
         var jwtSecret = "some jwt secret key";
@@ -78,7 +78,7 @@ public class TokenServiceTests
         Assert.Throws<InvalidOperationException>(func);
     }
     [Fact]
-    public void TokenService_GetPrincipalFromExpiredToken_ThrowsException_WhenJwtSecretIsNotPresent()
+    public void GetPrincipalFromExpiredToken_NonExistingJwtSecretEnvironmentVariable_ThrowsInvalidOperationException()
     {
         // Arrange
         var jwtSecret = "some jwt secret key";
@@ -99,7 +99,7 @@ public class TokenServiceTests
         Assert.Throws<InvalidOperationException>(func);
     }
     [Fact]
-    public void TokenService_GetPrincipalFromExpiredToken_ThrowsInvalidAccessTokenBadRequestException_WhenTokenIsInvalid()
+    public void GetPrincipalFromExpiredToken_AccessTokenIsInvalid_ThrowsInvalidAccessTokenBadRequestException()
     {
         // Arrange
         var jwtSecret = "some jwt secret key";
@@ -122,7 +122,7 @@ public class TokenServiceTests
     }
 
     [Fact]
-    public void TokenService_GetPrincipalFromExpiredToken_ReturnsValidPrincipal()
+    public void GetPrincipalFromExpiredToken_ValidCredentialsAndSecret_ReturnsValidPrincipal()
     {
         // Arrange
         var jwtSecret = "some jwt secret key";
