@@ -1,30 +1,30 @@
 ﻿using Files.API.Model;
 using Files.API.Model.Enums;
 using MassTransit;
-using MassTransitModels.File;
 using Microsoft.EntityFrameworkCore;
+using Models.File;
 
 namespace Files.API.MassTransit.Consumers;
-public class FileCreatedFaultConsumer : IConsumer<Fault<FileCreated>>
+
+public class FileSavedConsumer : IConsumer<FileSaved>
 {
     private readonly ApplicationDatabaseContext _context;
 
-    public FileCreatedFaultConsumer(
-        ApplicationDatabaseContext context)
+    public FileSavedConsumer(ApplicationDatabaseContext context)
     {
         _context = context;
     }
-    public async Task Consume(ConsumeContext<Fault<FileCreated>> context)
+    public async Task Consume(ConsumeContext<FileSaved> context)
     {
-        var faultMessage = context.Message.Message;
-        if (Guid.TryParse(faultMessage.Name, out Guid fileId))
+        if (Guid.TryParse(context.Message.Name, out Guid fileId))
         {
             var file = await _context.Files.FirstOrDefaultAsync(x => x.Id == fileId);
             if (file is not null)
             {
-                file.UploadingStatus = UploadingStatus.Fault;
+                file.UploadingStatus = UploadingStatus.Completed;
                 await _context.SaveChangesAsync();
             }
         }
     }
 }
+
