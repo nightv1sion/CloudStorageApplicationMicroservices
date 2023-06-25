@@ -31,7 +31,7 @@ public class FileService : IFileService
         _publishEndpoint = publishEndpoint;
         _client = client;
         _logger = logger;
-        _logger.LogInformation("File Service called");
+        _logger.LogInformation("File Service is called");
     }
     public async Task<File> GetFileAsync(Guid userId, Guid fileId)
     {
@@ -41,7 +41,7 @@ public class FileService : IFileService
         
         if (file is null)
         {
-            throw new InvalidFileIdBadRequest(fileId);
+            throw new InvalidFileIdBadRequestException(fileId);
         }
 
         return file;
@@ -72,7 +72,7 @@ public class FileService : IFileService
 
         if (file is null)
         {
-            throw new InvalidFileIdBadRequest(dto.Id);
+            throw new InvalidFileIdBadRequestException(dto.Id);
         }
 
         _mapper.Map(dto, file);
@@ -88,7 +88,7 @@ public class FileService : IFileService
 
         if (file == null)
         {
-            throw new InvalidFileIdBadRequest(fileId);
+            throw new InvalidFileIdBadRequestException(fileId);
         }
 
         await _publishEndpoint.Publish<FileDeleted>(new
