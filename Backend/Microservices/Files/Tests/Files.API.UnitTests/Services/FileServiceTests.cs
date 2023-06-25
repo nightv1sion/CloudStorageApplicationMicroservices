@@ -43,7 +43,7 @@ public class FileServiceTests
 
         var func = async () => await _service.GetFileAsync(Guid.NewGuid(), Guid.NewGuid());
 
-        await Assert.ThrowsAsync<InvalidFileIdBadRequest>(func);
+        await Assert.ThrowsAsync<InvalidFileIdBadRequestException>(func);
     }
     [Fact]
     public async Task GetFile_ExistingFileId_ReturnsValidFile()

@@ -4,9 +4,9 @@ using File = Files.API.Model.File;
 
 namespace Files.API.Mapping;
 
-public class MappingProfile : Profile
+public class FileMappingProfile : Profile
 {
-    public MappingProfile()
+    public FileMappingProfile()
     {
         CreateMap<UpdateFileDto, Model.File>()
             .ForMember(x => x.Id, opts => opts.Ignore());

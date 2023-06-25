@@ -13,7 +13,7 @@ public static class ServicesExtensions
 {
     public static void ConfigureDatabaseContext(this IServiceCollection services, IConfiguration configuration)
     {
-        if (configuration["ASPNETCORE_ENVIRONMENT"] == "Development")
+        /*if (configuration["ASPNETCORE_ENVIRONMENT"] == "Development")
         {
             services.AddDbContext<ApplicationDatabaseContext>(
                 x =>
@@ -21,16 +21,17 @@ public static class ServicesExtensions
                     x.UseInMemoryDatabase("TestDatabase");
                 });
         }
-        else {
+        else {*/
             services.AddDbContext<ApplicationDatabaseContext>(
             x => x.UseSqlServer(
                 configuration.GetConnectionString()));
-        }
+        /*}*/
     }
 
     public static void ConfigureServices(this IServiceCollection services)
     {
         services.AddScoped<IFileService, FileService>();
+        services.AddScoped<IDirectoryService, DirectoryService>();
     }
 
     public static void ConfigureMassTransit(this IServiceCollection services, IConfiguration configuration)
