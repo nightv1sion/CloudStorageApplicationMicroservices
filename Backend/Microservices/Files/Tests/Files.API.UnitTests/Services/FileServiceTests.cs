@@ -1,5 +1,7 @@
-﻿using AutoMapper;
+﻿using System.Reflection;
+using AutoMapper;
 using Files.API.Exceptions;
+using Files.API.Mapping;
 using Files.API.Model;
 using Files.API.Services;
 using Files.API.Services.Contracts;
@@ -17,7 +19,7 @@ public class FileServiceTests
 {
     private readonly IFileService _service;
     private readonly Mock<ApplicationDatabaseContext> _context;
-    private readonly Mock<IMapper> _mapper;
+    private readonly IMapper _mapper;
     private readonly Mock<IPublishEndpoint> _publishEndpoint;
     private readonly Mock<IRequestClient<RetrieveFile>> _client;
     private readonly Mock<ILogger<FileService>> _logger;
@@ -26,12 +28,15 @@ public class FileServiceTests
     {
         _context = new Mock<ApplicationDatabaseContext>(
             () => new ApplicationDatabaseContext(new DbContextOptions<ApplicationDatabaseContext>()));
-        _mapper = new Mock<IMapper>();
+        _mapper = new MapperConfiguration(x =>
+        {
+            x.AddProfile<FileMappingProfile>();
+        }).CreateMapper();
         _publishEndpoint = new Mock<IPublishEndpoint>();
         _client = new Mock<IRequestClient<RetrieveFile>>();
         _logger = new Mock<ILogger<FileService>>();
         _service = new FileService(
-            _context.Object, _mapper.Object, _publishEndpoint.Object, _client.Object, _logger.Object);
+            _context.Object, _mapper, _publishEndpoint.Object, _client.Object, _logger.Object);
     }
 
     [Fact]
@@ -62,7 +67,7 @@ public class FileServiceTests
 
         var result = await _service.GetFileAsync(userId, fileId);
         
-        Assert.Equal(file, result);
+        Assert.Equal(file.Id, result.Id);
     }
     [Fact]
     public async Task GetFilesByUserId_UserIdWithFiles_ReturnsValidFiles()
@@ -93,6 +98,6 @@ public class FileServiceTests
         var result = await _service.GetFilesByUserIdAsync(userId);
         
         Assert.Equal(validFiles.Count, result.Count);
-        Assert.True(result.SequenceEqual(validFiles));
+        Assert.True(result.Select(x => x.Id).SequenceEqual(validFiles.Select(x => x.Id)));
     }
 }

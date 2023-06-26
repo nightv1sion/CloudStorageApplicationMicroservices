@@ -1,5 +1,7 @@
-﻿using Files.API.DataTransferObjects;
+﻿using Files.API.DataTransferObjects.Directory;
+using Files.API.DataTransferObjects.File;
 using Files.API.Services.Contracts;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Services.Authentication;
 
 namespace Files.API.Extensions;
@@ -14,6 +16,17 @@ public static class MinimalApiExtensions
     private static void MapDirectoryMinimalApiEndpoints(this WebApplication app)
     {
         var group = app.MapGroup("/api/directory");
+
+        group.MapGet("", async (
+            HttpContext httpContext,
+            IAuthenticationService authenticationService,
+            IDirectoryService directoryService) =>
+        {
+            var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+            var directories = await directoryService.GetDirectoriesAsync(userId);
+            return Results.Ok(directories);
+        });
+        
         group.MapPost("", async (
             CreateDirectoryDto dto,
             HttpContext httpContext,
@@ -21,7 +34,7 @@ public static class MinimalApiExtensions
             IDirectoryService directoryService) =>
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
-            await directoryService.CreateDirectoryAsync(dto, userId);
+            await directoryService.CreateDirectoryAsync(userId, dto);
             return Results.Ok();
         });
     }

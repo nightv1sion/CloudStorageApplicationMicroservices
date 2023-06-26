@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Files.API.DataTransferObjects;
+namespace Files.API.DataTransferObjects.File;
 
 public class FormFileDto
 {
