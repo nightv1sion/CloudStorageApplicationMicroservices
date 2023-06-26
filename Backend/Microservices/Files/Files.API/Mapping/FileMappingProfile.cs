@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Files.API.DataTransferObjects;
+using Files.API.DataTransferObjects.File;
 using File = Files.API.Model.File;
 
 namespace Files.API.Mapping;
@@ -15,5 +16,6 @@ public class FileMappingProfile : Profile
                 opts => opts.MapFrom(x => x.FileExtension));
 
         CreateMap<CreateFileDto, File>();
+        CreateMap<File, FileDto>();
     }
 }

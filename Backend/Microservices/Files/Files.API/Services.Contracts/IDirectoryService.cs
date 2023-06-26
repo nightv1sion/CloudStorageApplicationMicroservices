@@ -1,8 +1,9 @@
-﻿using Files.API.DataTransferObjects;
+﻿using Files.API.DataTransferObjects.Directory;
 
 namespace Files.API.Services.Contracts;
 
 public interface IDirectoryService
 {
-    public Task<Files.API.Model.Directory> CreateDirectoryAsync(CreateDirectoryDto dto, Guid userId);
+    Task<ICollection<DirectoryDto>> GetDirectoriesAsync(Guid userId);
+    Task<DirectoryDto> CreateDirectoryAsync(Guid userId, CreateDirectoryDto dto);
 }

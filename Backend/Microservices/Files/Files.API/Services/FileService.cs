@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Files.API.DataTransferObjects;
+using Files.API.DataTransferObjects.File;
 using Files.API.Exceptions;
 using Files.API.Model;
 using Files.API.Services.Contracts;
@@ -33,28 +33,21 @@ public class FileService : IFileService
         _logger = logger;
         _logger.LogInformation("File Service is called");
     }
-    public async Task<File> GetFileAsync(Guid userId, Guid fileId)
+    public async Task<FileDto> GetFileAsync(Guid userId, Guid fileId)
     {
-        var file = await _context.Files
-            .Where(x => x.UserId == userId)
-            .FirstOrDefaultAsync(x => x.Id == fileId);
-        
-        if (file is null)
-        {
-            throw new InvalidFileIdBadRequestException(fileId);
-        }
-
-        return file;
+        var file = await FindFileAsync(userId, fileId);
+        var dto = _mapper.Map<FileDto>(file); 
+        return dto;
     }
-    public async Task<ICollection<File>> GetFilesByUserIdAsync(Guid userId)
+    public async Task<ICollection<FileDto>> GetFilesByUserIdAsync(Guid userId)
     {
         var files = await _context.Files
             .Where(x => x.UserId == userId)
             .ToListAsync();
 
-        return files;
+        return _mapper.Map<ICollection<FileDto>>(files);
     }
-    public async Task<File> CreateFileAsync(CreateFileDto dto)
+    public async Task<FileDto> CreateFileAsync(CreateFileDto dto)
     {
         var entity = _mapper.Map<File>(dto);
 
@@ -64,7 +57,7 @@ public class FileService : IFileService
         
         _logger.LogInformation($"File with id: {entity.Id} created");
 
-        return entity;
+        return _mapper.Map<FileDto>(entity);
     }
     public async Task UpdateFileAsync(Guid userId, UpdateFileDto dto)
     {
@@ -84,7 +77,7 @@ public class FileService : IFileService
 
     public async Task DeleteFileAsync(Guid userId, Guid fileId)
     {
-        var file = await GetFileAsync(userId, fileId);
+        var file = await FindFileAsync(userId, fileId);
 
         if (file == null)
         {
@@ -137,5 +130,19 @@ public class FileService : IFileService
             Name = file.Name,
             Extension = file.Extension
         };
+    }
+     
+    private async Task<File> FindFileAsync(Guid userId, Guid fileId)
+    {
+        var file = await _context.Files
+            .Where(x => x.UserId == userId)
+            .FirstOrDefaultAsync(x => x.Id == fileId);
+        
+        if (file is null)
+        {
+            throw new InvalidFileIdBadRequestException(fileId);
+        }
+
+        return file;
     }
 }
