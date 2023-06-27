@@ -17,6 +17,17 @@ public static class MinimalApiExtensions
     {
         var group = app.MapGroup("/api/directory");
 
+        group.MapGet("{id:guid}", async (
+            Guid id,
+            HttpContext httpContext,
+            IAuthenticationService authenticationService,
+            IDirectoryService directoryService) =>
+        {
+            var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+            var directory = await directoryService.GetDirectoryAsync(userId, id);
+            return Results.Ok(directory);
+        });
+
         group.MapGet("", async (
             HttpContext httpContext,
             IAuthenticationService authenticationService,
@@ -35,6 +46,28 @@ public static class MinimalApiExtensions
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
             await directoryService.CreateDirectoryAsync(userId, dto);
+            return Results.Ok();
+        });
+
+        group.MapPut("", async (
+            UpdateDirectoryDto dto,
+            HttpContext httpContext,
+            IAuthenticationService authenticationService,
+            IDirectoryService directoryService) =>
+        {
+            var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+            await directoryService.UpdateDirectoryAsync(userId, dto);
+            return Results.Ok();
+        });
+
+        group.MapDelete("{id:guid}", async (
+            Guid id,
+            HttpContext httpContext,
+            IAuthenticationService authenticationService,
+            IDirectoryService directoryService) =>
+        {
+            var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+            await directoryService.DeleteDirectoryAsync(userId, id);
             return Results.Ok();
         });
     }

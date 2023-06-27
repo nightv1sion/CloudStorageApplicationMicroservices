@@ -13,6 +13,11 @@ public class ApplicationDatabaseContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Directory>()
+            .HasOne<Directory>(x => x.ParentDirectory)
+            .WithMany(x => x.Directories)
+            .HasForeignKey(x => x.ParentDirectoryId)
+            .OnDelete(DeleteBehavior.ClientCascade);
     }
 
     public virtual DbSet<File> Files { get; set; }
