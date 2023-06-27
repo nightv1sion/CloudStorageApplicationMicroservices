@@ -48,7 +48,7 @@ namespace Files.API.Migrations
 
                     b.HasIndex("ParentDirectoryId");
 
-                    b.ToTable("Directories");
+                    b.ToTable("Directories", (string)null);
                 });
 
             modelBuilder.Entity("Files.API.Model.File", b =>
@@ -84,7 +84,7 @@ namespace Files.API.Migrations
 
                     b.HasIndex("DirectoryId");
 
-                    b.ToTable("Files");
+                    b.ToTable("Files", (string)null);
                 });
 
             modelBuilder.Entity("Files.API.Model.Directory", b =>
