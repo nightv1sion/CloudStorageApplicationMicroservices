@@ -1,6 +1,6 @@
 ﻿using DatabaseInfrastructure.Helper;
 using Files.API.MassTransit.Consumers;
-using Files.API.Model;
+using Files.API.Model.Database;
 using Files.API.Services;
 using Files.API.Services.Contracts;
 using MassTransit;
@@ -13,7 +13,7 @@ public static class ServicesExtensions
 {
     public static void ConfigureDatabaseContext(this IServiceCollection services, IConfiguration configuration)
     {
-        /*if (configuration["ASPNETCORE_ENVIRONMENT"] == "Development")
+        if (configuration["ASPNETCORE_ENVIRONMENT"] == "Development")
         {
             services.AddDbContext<ApplicationDatabaseContext>(
                 x =>
@@ -21,11 +21,11 @@ public static class ServicesExtensions
                     x.UseInMemoryDatabase("TestDatabase");
                 });
         }
-        else {*/
+        else {
             services.AddDbContext<ApplicationDatabaseContext>(
             x => x.UseSqlServer(
                 configuration.GetConnectionString()));
-        /*}*/
+        }
     }
 
     public static void ConfigureServices(this IServiceCollection services)

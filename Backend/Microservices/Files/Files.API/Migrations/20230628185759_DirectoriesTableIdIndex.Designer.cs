@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Files.API.Migrations
 {
     [DbContext(typeof(ApplicationDatabaseContext))]
-    [Migration("20230625200201_DirectoriesTableMigration")]
-    partial class DirectoriesTableMigration
+    [Migration("20230628185759_DirectoriesTableIdIndex")]
+    partial class DirectoriesTableIdIndex
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,6 +50,8 @@ namespace Files.API.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("ParentDirectoryId");
+
+                    b.HasIndex(new[] { "Id" }, "directories_id_uindex");
 
                     b.ToTable("Directories");
                 });

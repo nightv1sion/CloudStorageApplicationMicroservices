@@ -1,4 +1,4 @@
-﻿using Files.API.Model;
+﻿using Files.API.Model.Database;
 using Microsoft.EntityFrameworkCore;
 
 namespace Files.API.Extensions;

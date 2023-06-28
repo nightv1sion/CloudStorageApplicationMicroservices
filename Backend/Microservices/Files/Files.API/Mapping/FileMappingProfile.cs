@@ -9,7 +9,7 @@ public class FileMappingProfile : Profile
 {
     public FileMappingProfile()
     {
-        CreateMap<UpdateFileDto, Model.File>()
+        CreateMap<UpdateFileDto, File>()
             .ForMember(x => x.Id, opts => opts.Ignore());
         CreateMap<FormFileDto, CreateFileDto>()
             .ForMember(x => x.Extension, 

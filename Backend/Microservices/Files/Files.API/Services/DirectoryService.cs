@@ -2,7 +2,7 @@
 using Files.API.DataTransferObjects;
 using Files.API.DataTransferObjects.Directory;
 using Files.API.Exceptions;
-using Files.API.Model;
+using Files.API.Model.Database;
 using Files.API.Services.Contracts;
 using Microsoft.EntityFrameworkCore;
 using Directory = Files.API.Model.Directory;
@@ -49,7 +49,7 @@ public class DirectoryService : IDirectoryService
         if (directory.ParentDirectoryId.HasValue)
         {
             var parent = await _context.Directories.FirstOrDefaultAsync(
-                x => x.Id == dto.ParentId);
+                x => x.Id == dto.ParentDirectoryId);
 
             if (parent is null)
             {
@@ -109,7 +109,7 @@ public class DirectoryService : IDirectoryService
         if (directory.ParentDirectoryId.HasValue)
         {
             var parent = await _context.Directories.FirstOrDefaultAsync(
-                x => x.Id == dto.ParentId);
+                x => x.Id == dto.ParentDirectoryId);
 
             if (parent is null)
             {
@@ -119,29 +119,26 @@ public class DirectoryService : IDirectoryService
             directory.ParentDirectoryId = parent.Id;
         }
         directory.Updated = DateTime.Now;;
-        if (dto.Directories.Count > 0)
+        
+        directory.Directories.Clear();
+        foreach (var directoryId in dto.Directories)
         {
-            directory.Directories.Clear();
-            foreach (var directoryId in dto.Directories)
-            {
-                var dir = await FindDirectoryAsync(userId, directoryId);
-                directory.Directories.Add(dir);
-            }
+            var dir = await FindDirectoryAsync(userId, directoryId);
+            directory.Directories.Add(dir);
         }
 
-        if (dto.Files.Count > 0)
+        
+        directory.Files.Clear();
+        foreach (var fileId in dto.Files)
         {
-            directory.Files.Clear();
-            foreach (var fileId in dto.Files)
+            var file = await _context.Files.FirstOrDefaultAsync(x => x.Id == fileId);
+            if (file is null)
             {
-                var file = await _context.Files.FirstOrDefaultAsync(x => x.Id == fileId);
-                if (file is null)
-                {
-                    throw new InvalidFileIdBadRequestException(fileId);
-                }
-                directory.Files.Add(file);
+                throw new InvalidFileIdBadRequestException(fileId);
             }
+            directory.Files.Add(file);
         }
+        
         _context.Directories.Update(directory);
         await _context.SaveChangesAsync();
         _logger.LogInformation($"Directory with id: {directory.Id} updated");

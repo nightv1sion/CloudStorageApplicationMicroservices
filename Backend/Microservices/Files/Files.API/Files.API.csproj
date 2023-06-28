@@ -36,4 +36,8 @@
       <ProjectReference Include="..\..\..\Shared\Services\Services.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Remove="Model\Database\DataSeeder.cs" />
+    </ItemGroup>
+
 </Project>

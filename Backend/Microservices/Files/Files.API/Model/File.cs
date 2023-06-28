@@ -1,4 +1,4 @@
-﻿using Files.API.Model.Enums;
+﻿using Files.API.Model.Database.Enums;
 
 namespace Files.API.Model;
 

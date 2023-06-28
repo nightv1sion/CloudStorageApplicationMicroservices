@@ -2,7 +2,7 @@
 using AutoMapper;
 using Files.API.Exceptions;
 using Files.API.Mapping;
-using Files.API.Model;
+using Files.API.Model.Database;
 using Files.API.Services;
 using Files.API.Services.Contracts;
 using MassTransit;
