@@ -9,14 +9,10 @@ public class DirectoryMappingProfile : Profile
     public DirectoryMappingProfile()
     {
         CreateMap<CreateDirectoryDto, Directory>()
-            .ForMember(x => x.ParentDirectoryId,
-                opts => opts.MapFrom(exp => exp.ParentId))
             .ForMember(x => x.Directories, opts => opts.Ignore())
             .ForMember(x => x.Files, opts => opts.Ignore());
         
         CreateMap<UpdateDirectoryDto, Directory>()
-            .ForMember(x => x.ParentDirectoryId,
-                opts => opts.MapFrom(exp => exp.ParentId))
             .ForMember(x => x.Directories, opts => opts.Ignore())
             .ForMember(x => x.Files, opts => opts.Ignore());
 

@@ -1,5 +1,5 @@
-﻿using Files.API.Model;
-using Files.API.Model.Enums;
+﻿using Files.API.Model.Database;
+using Files.API.Model.Database.Enums;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Models.File;

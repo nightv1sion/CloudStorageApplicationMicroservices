@@ -1,4 +1,4 @@
-﻿namespace Files.API.Model.Enums;
+﻿namespace Files.API.Model.Database.Enums;
 
 public enum UploadingStatus
 {

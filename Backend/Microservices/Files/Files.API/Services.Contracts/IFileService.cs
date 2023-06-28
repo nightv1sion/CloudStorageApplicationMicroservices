@@ -1,6 +1,6 @@
 ﻿using Files.API.DataTransferObjects;
 using Files.API.DataTransferObjects.File;
-using Files.API.Model;
+using Files.API.Model.Database;
 using File = Files.API.Model.File;
 
 namespace Files.API.Services.Contracts;

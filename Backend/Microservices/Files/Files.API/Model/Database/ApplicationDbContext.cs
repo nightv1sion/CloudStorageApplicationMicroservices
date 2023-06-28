@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Files.API.Model;
+namespace Files.API.Model.Database;
 
 public class ApplicationDatabaseContext : DbContext
 {
@@ -13,11 +13,9 @@ public class ApplicationDatabaseContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
         modelBuilder.Entity<Directory>()
-            .HasOne<Directory>(x => x.ParentDirectory)
-            .WithMany(x => x.Directories)
-            .HasForeignKey(x => x.ParentDirectoryId)
-            .OnDelete(DeleteBehavior.ClientCascade);
+            .HasIndex(x => x.Id, "directories_id_uindex");
     }
 
     public virtual DbSet<File> Files { get; set; }
