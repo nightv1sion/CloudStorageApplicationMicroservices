@@ -30,7 +30,7 @@ services:
     container_name: files-microservice-api
     build:
       context: ../Backend
-      dockerfile: ../Backend/Microservices/Files/Files.API/Dockerfile
+      dockerfile: ../Backend/Microservices/Files/src/Presentation/Dockerfile
     ports:
       - "5002:80"
     depends_on:
