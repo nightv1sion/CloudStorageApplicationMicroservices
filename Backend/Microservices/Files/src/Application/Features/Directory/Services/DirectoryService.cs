@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Files.Application.Common.Exceptions;
 using Files.Application.Features.Directory.DataTransferObjects;
+using Files.Application.Features.File.Services;
 using Files.Infrastructure.Persistence;
 using Files.Infrastructure.Persistence.RepositoryManagers;
 using Microsoft.EntityFrameworkCore;
@@ -13,23 +14,25 @@ public class DirectoryService : IDirectoryService
     private readonly ILogger<DirectoryService> _logger;
     private readonly IMapper _mapper;
     private readonly IRepositoryManager _repositoryManager;
+    private readonly IFileService _fileService;
 
     public DirectoryService(
         ILogger<DirectoryService> logger,
         IMapper mapper,
-        IRepositoryManager repositoryManager)
+        IRepositoryManager repositoryManager, 
+        IFileService fileService)
     {
         _logger = logger;
         _mapper = mapper;
         _repositoryManager = repositoryManager;
-
+        _fileService = fileService;
         _logger.LogInformation("Directory Service is called");
     }
 
     public async Task<DirectoryDto> GetDirectoryAsync(
         Guid userId, Guid directoryId, CancellationToken cancellationToken = default)
     {
-        var directory = await FindDirectoryAsync(userId, directoryId, cancellationToken);
+        var directory = await FindDirectoryWithChildElementsAsync(userId, directoryId, cancellationToken);
         var dto = _mapper.Map<DirectoryDto>(directory);
         return dto;
     }
@@ -105,16 +108,7 @@ public class DirectoryService : IDirectoryService
         UpdateDirectoryDto dto,
         CancellationToken cancellationToken = default)
     {
-        var directory = await _repositoryManager.DirectoryRepository
-            .FindAll(true)
-            .Include(x => x.Directories)
-            .Include(x => x.Files)
-            .FirstOrDefaultAsync(x => x.UserId == userId && x.Id == dto.Id, cancellationToken);
-
-        if (directory is null)
-        {
-            throw new InvalidDirectoryIdBadRequestException(dto.Id);
-        }
+        var directory = await FindDirectoryWithChildElementsAsync(userId, dto.Id, cancellationToken);
 
         _mapper.Map(dto, directory);
         
@@ -163,11 +157,34 @@ public class DirectoryService : IDirectoryService
         Guid directoryId,
         CancellationToken cancellationToken = default)
     {
-        var directory = await FindDirectoryAsync(userId, directoryId, cancellationToken);
+        var directory = await FindDirectoryWithChildElementsAsync(userId, directoryId, cancellationToken);
+        await RemoveNestedElements(directory, userId);
         _repositoryManager.DirectoryRepository.Remove(directory);
         await _repositoryManager.SaveChangesAsync(cancellationToken);
         _logger.LogInformation($"Directory with id: {directory.Id} deleted");
-
+    }
+    private async Task RemoveNestedElements(Domain.Entities.Directory.Directory directory, Guid userId)
+    {
+        await RemoveNestedFilesAsync(directory, userId);
+        if (directory.Directories is not null)
+        {
+            foreach (var child in directory.Directories)
+            {
+                await RemoveNestedFilesAsync(child, userId);
+                await RemoveNestedElements(child, userId);
+                _repositoryManager.DirectoryRepository.Remove(child);
+            }
+        }
+    }
+    private async Task RemoveNestedFilesAsync(Domain.Entities.Directory.Directory directory, Guid userId)
+    {
+        if (directory.Files is not null && directory.Files.Any())
+        {
+            foreach (var file in directory.Files)
+            {
+                await _fileService.DeleteFileAsync(userId, file.Id);
+            }
+        }
     }
     private async Task<Domain.Entities.Directory.Directory> FindDirectoryAsync(
         Guid userId, 
@@ -184,4 +201,45 @@ public class DirectoryService : IDirectoryService
 
         return directory;
     }
+
+    private async Task<Domain.Entities.Directory.Directory> FindDirectoryWithChildElementsAsync(
+        Guid userId,
+        Guid directoryId,
+        CancellationToken cancellationToken = default)
+    {
+        var directory = await _repositoryManager
+            .DirectoryRepository
+            .FindByCondition(x => x.UserId == userId && x.Id == directoryId, false)
+            .Include(x => x.Directories)
+            .Include(x => x.Files)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        if (directory is null)
+        {
+            throw new InvalidDirectoryIdBadRequestException(directoryId);
+        }
+
+        return directory;
+    }
+    
+    private async Task<Domain.Entities.Directory.Directory> FindDirectoryWithNestedElementsAsync(
+        Guid userId,
+        Guid directoryId,
+        CancellationToken cancellationToken = default)
+    {
+        var directory = await _repositoryManager
+            .DirectoryRepository
+            .FindByCondition(x => x.UserId == userId && x.Id == directoryId, false)
+            .Include(x => x.Directories).ThenInclude(x => x.Directories)
+            .Include(x => x.Directories).ThenInclude(x => x.Files)
+            .Include(x => x.Files)
+            .FirstOrDefaultAsync(cancellationToken);
+        
+        if (directory is null)
+        {
+            throw new InvalidDirectoryIdBadRequestException(directoryId);
+        }
+
+        return directory;
+    } 
 }

@@ -50,7 +50,7 @@ namespace Files.Application.Common.Exceptions.Migrations
 
                     b.HasIndex(new[] { "Id" }, "directories_id_uindex");
 
-                    b.ToTable("Directories");
+                    b.ToTable("Directories", (string)null);
                 });
 
             modelBuilder.Entity("Presentation.Model.File", b =>
@@ -86,7 +86,7 @@ namespace Files.Application.Common.Exceptions.Migrations
 
                     b.HasIndex("DirectoryId");
 
-                    b.ToTable("Files");
+                    b.ToTable("Files", (string)null);
                 });
 
             modelBuilder.Entity("Presentation.Model.Directory", b =>
