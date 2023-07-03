@@ -10,15 +10,20 @@ public class ApplicationDatabaseContext : DbContext
     {
         
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Directory>()
             .HasIndex(x => x.Id, "directories_id_uindex");
+
     }
 
-    public virtual DbSet<File?> Files { get; set; }
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        base.OnConfiguring(optionsBuilder);
+    }
+
+    public virtual DbSet<File> Files { get; set; }
     public virtual DbSet<Directory> Directories { get; set; }
 }

@@ -32,18 +32,27 @@ public class FileService : IFileService
         _repositoryManager = repositoryManager;
         _logger.LogInformation("File Service is called");
     }
-    public async Task<FileDto> GetFileAsync(Guid userId, Guid fileId, CancellationToken cancellationToken = default)
+    public async Task<FileDto> GetFileAsync(
+        Guid userId, 
+        Guid? directoryId,
+        Guid fileId, 
+        CancellationToken cancellationToken = default)
     {
-        var file = await FindFileAsync(userId, fileId, cancellationToken);
+        var file = await FindFileAsync(userId, directoryId, fileId, false, cancellationToken);
         var dto = _mapper.Map<FileDto>(file); 
         return dto;
     }
+
     public async Task<ICollection<FileDto>> GetFilesAsync(
-        Guid userId, bool trackChanges, CancellationToken cancellationToken = default)
+        Guid userId, 
+        Guid? directoryId, 
+        bool trackChanges, 
+        CancellationToken cancellationToken = default)
     {
         var files = await _repositoryManager
             .FileRepository
-            .FindByCondition(x => x.UserId == userId, trackChanges)
+            .FindByCondition(x => x.UserId == userId 
+                                  && x.DirectoryId == directoryId, trackChanges)
             .ToListAsync(cancellationToken);
 
         return _mapper.Map<ICollection<FileDto>>(files);
@@ -51,6 +60,17 @@ public class FileService : IFileService
     public async Task<FileDto> CreateFileAsync(
         CreateFileDto dto, CancellationToken cancellationToken = default)
     {
+        if (dto.DirectoryId.HasValue)
+        {
+            var directory = await _repositoryManager
+                .DirectoryRepository
+                .FindSingleAsync(x => x.Id == dto.DirectoryId.Value, cancellationToken);
+            if (directory is null)
+            {
+                throw new InvalidDirectoryIdBadRequestException(dto.DirectoryId.Value);
+            }
+        }
+        
         var entity = _mapper.Map<Domain.Entities.File.File>(dto);
 
         await _repositoryManager.FileRepository.CreateAsync(entity, cancellationToken);
@@ -64,12 +84,7 @@ public class FileService : IFileService
     public async Task UpdateFileAsync(
         Guid userId, UpdateFileDto dto, CancellationToken cancellationToken = default)
     {
-        var file = await GetFileAsync(userId, dto.Id, cancellationToken);
-
-        if (file is null)
-        {
-            throw new InvalidFileIdBadRequestException(dto.Id);
-        }
+        var file = await GetFileAsync(userId, dto.DirectoryId, dto.Id, cancellationToken);
 
         _mapper.Map(dto, file);
 
@@ -78,9 +93,13 @@ public class FileService : IFileService
         _logger.LogInformation($"File with id: {file.Id} was updated");
     }
 
-    public async Task DeleteFileAsync(Guid userId, Guid fileId, CancellationToken cancellationToken = default)
+    public async Task DeleteFileAsync(
+        Guid userId, 
+        Guid? directoryId,
+        Guid fileId, 
+        CancellationToken cancellationToken = default)
     {
-        var file = await FindFileAsync(userId, fileId);
+        var file = await FindFileAsync(userId, directoryId, fileId, false, cancellationToken);
 
         if (file == null)
         {
@@ -91,7 +110,7 @@ public class FileService : IFileService
         {
             Name = file.Id.ToString(),
             Extension = file.Extension
-        });
+        }, cancellationToken);
         
         _repositoryManager.FileRepository.Remove(file);
         await _repositoryManager.SaveChangesAsync(cancellationToken);
@@ -115,9 +134,12 @@ public class FileService : IFileService
         _logger.LogInformation("File created event published to RabbitMQ");
     }
 
-    public async Task<DownloadFileDto> DownloadFileAsync(Guid userId, Guid id, CancellationToken cancellationToken = default)
+    public async Task<DownloadFileDto> DownloadFileAsync(
+        Guid userId,
+        Guid? directoryId,
+        Guid id, CancellationToken cancellationToken = default)
     {
-        var file = await GetFileAsync(userId, id, cancellationToken);
+        var file = await GetFileAsync(userId, directoryId, id, cancellationToken);
         
         _logger.LogInformation("Retrieve request to RabbitMQ");
         
@@ -136,12 +158,39 @@ public class FileService : IFileService
     }
      
     private async Task<Domain.Entities.File.File> FindFileAsync(
-        Guid userId, Guid fileId, CancellationToken cancellationToken = default)
+        Guid userId,
+        Guid? directoryId,
+        Guid fileId,
+        bool trackChanges,
+        CancellationToken cancellationToken = default)
     {
-        var file = await _repositoryManager
-            .FileRepository
-            .FindSingleAsync(x => x.UserId == userId && x.Id == fileId, cancellationToken);
+        Domain.Entities.File.File? file = null;
+        if (directoryId.HasValue)
+        {
+            var directory = await _repositoryManager
+                .DirectoryRepository
+                .FindAll(trackChanges)
+                .Include(x => x.Files)
+                .FirstOrDefaultAsync(x => x.UserId == userId 
+                                          && x.Id == directoryId, cancellationToken);
+
+            if (directory is null)
+            {
+                throw new InvalidDirectoryIdBadRequestException(directoryId.Value);
+            }
         
+            file = directory.Files.FirstOrDefault(x => x.Id == fileId);
+        
+            
+        }
+        else
+        {
+            file = await _repositoryManager
+                .FileRepository
+                .FindSingleAsync(x => x.UserId == userId 
+                                      && !x.DirectoryId.HasValue 
+                                      && x.Id == fileId, cancellationToken);
+        }
         if (file is null)
         {
             throw new InvalidFileIdBadRequestException(fileId);

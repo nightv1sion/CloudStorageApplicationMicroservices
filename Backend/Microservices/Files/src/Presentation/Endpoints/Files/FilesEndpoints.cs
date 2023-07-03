@@ -18,7 +18,7 @@ public static class FilesEndpoints
             CancellationToken cancellationToken) =>
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
-            var file = await fileService.GetFileAsync(userId, id, cancellationToken);
+            var file = await fileService.GetFileAsync(userId, null, id, cancellationToken);
             return Results.Ok(file);
         });
 
@@ -29,7 +29,8 @@ public static class FilesEndpoints
             CancellationToken cancellationToken) =>
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
-            var file = await fileService.GetFilesAsync(userId, false, cancellationToken);
+            var file = await fileService.GetFilesAsync(
+                userId, null, false, cancellationToken);
             return Results.Ok(file);
         });
 
@@ -65,7 +66,7 @@ public static class FilesEndpoints
             CancellationToken cancellationToken) =>
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
-            var dto = await fileService.DownloadFileAsync(userId, id, cancellationToken);
+            var dto = await fileService.DownloadFileAsync(userId, null, id, cancellationToken);
             return Results.File(dto.Bytes, "multipart/form-data", dto.Name + dto.Extension);
         });
 
@@ -77,7 +78,66 @@ public static class FilesEndpoints
             CancellationToken cancellationToken) =>
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
-            await fileService.DeleteFileAsync(userId, id, cancellationToken);
+            await fileService.DeleteFileAsync(userId, null, id, cancellationToken);
+            return Results.Ok();
+        });
+
+        return app;
+    }
+
+    public static WebApplication MapDirectoryFilesEndpoints(this WebApplication app)
+    {
+        var group = app.MapGroup("/api/directory/{directoryId:guid}/file");
+        
+        group.MapGet("{id:guid}", async (
+            Guid id,
+            Guid directoryId,
+            HttpContext httpContext,
+            IAuthenticationService authenticationService,
+            IFileService fileService,
+            CancellationToken cancellationToken) =>
+        {
+            var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+            var file = await fileService.GetFileAsync(userId, directoryId, id, cancellationToken);
+            return Results.Ok(file);
+        });
+
+        group.MapGet("", async (
+            Guid directoryId,
+            HttpContext httpContext,
+            IAuthenticationService authenticationService,
+            IFileService fileService,
+            CancellationToken cancellationToken) =>
+        {
+            var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+            var file = await fileService.GetFilesAsync(
+                userId, directoryId, false, cancellationToken);
+            return Results.Ok(file);
+        });
+
+        group.MapGet("{id:guid}/download", async (
+            Guid id,
+            Guid directoryId,
+            HttpContext httpContext,
+            IAuthenticationService authenticationService,
+            IFileService fileService,
+            CancellationToken cancellationToken) =>
+        {
+            var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+            var dto = await fileService.DownloadFileAsync(userId, directoryId, id, cancellationToken);
+            return Results.File(dto.Bytes, "multipart/form-data", dto.Name + dto.Extension);
+        });
+
+        group.MapDelete("{id}", async (
+            Guid id,
+            Guid directoryId,
+            IFileService fileService,
+            IAuthenticationService authenticationService,
+            HttpContext httpContext,
+            CancellationToken cancellationToken) =>
+        {
+            var userId = authenticationService.GetUserIdFromHeaders(httpContext);
+            await fileService.DeleteFileAsync(userId, directoryId, id, cancellationToken);
             return Results.Ok();
         });
 

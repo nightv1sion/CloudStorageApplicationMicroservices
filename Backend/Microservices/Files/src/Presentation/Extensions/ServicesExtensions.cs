@@ -16,21 +16,18 @@ public static class ServicesExtensions
 {
     public static void ConfigureDatabaseContext(this IServiceCollection services, IConfiguration configuration)
     {
-        if (configuration["ASPNETCORE_ENVIRONMENT"] == "Development")
-        {
-            services.AddDbContext<ApplicationDatabaseContext>(
-                x =>
+        services.AddDbContext<ApplicationDatabaseContext>(
+            (x) =>
+            {
+                if (configuration["ASPNETCORE_ENVIRONMENT"] == "Development")
                 {
-                    x.UseInMemoryDatabase("TestDatabase");
-                });
-        }
-        else {
-            services.AddDbContext<ApplicationDatabaseContext>(
-                (x) =>
+                    x.UseSqlServer(configuration["ConnectionStrings:LocalDatabase"]);
+                }
+                else
                 {
                     x.UseSqlServer(configuration.GetConnectionString());
-                });
-        }
+                }
+            });
     }
 
     public static void ConfigureMediator(this IServiceCollection services)

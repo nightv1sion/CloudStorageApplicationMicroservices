@@ -11,6 +11,7 @@ var app = builder
     .ConfigureApplication();
 
 app.MapFilesEndpoints();
+app.MapDirectoryFilesEndpoints();
 
 app.MapDirectoriesEndpoints();
 
