@@ -157,7 +157,7 @@ public class DirectoryService : IDirectoryService
         Guid directoryId,
         CancellationToken cancellationToken = default)
     {
-        var directory = await FindDirectoryWithChildElementsAsync(userId, directoryId, cancellationToken);
+        var directory = await FindDirectoryWithNestedElementsAsync(userId, directoryId, cancellationToken);
         await RemoveNestedElements(directory, userId);
         _repositoryManager.DirectoryRepository.Remove(directory);
         await _repositoryManager.SaveChangesAsync(cancellationToken);
@@ -166,23 +166,20 @@ public class DirectoryService : IDirectoryService
     private async Task RemoveNestedElements(Domain.Entities.Directory.Directory directory, Guid userId)
     {
         await RemoveNestedFilesAsync(directory, userId);
-        if (directory.Directories is not null)
+        foreach (var child in directory.Directories)
         {
-            foreach (var child in directory.Directories)
-            {
-                await RemoveNestedFilesAsync(child, userId);
-                await RemoveNestedElements(child, userId);
-                _repositoryManager.DirectoryRepository.Remove(child);
-            }
+            await RemoveNestedFilesAsync(child, userId);
+            await RemoveNestedElements(child, userId);
+            _repositoryManager.DirectoryRepository.Remove(child);
         }
     }
     private async Task RemoveNestedFilesAsync(Domain.Entities.Directory.Directory directory, Guid userId)
     {
-        if (directory.Files is not null && directory.Files.Any())
+        if (directory.Files.Any())
         {
             foreach (var file in directory.Files)
             {
-                await _fileService.DeleteFileAsync(userId, file.Id);
+                await _fileService.DeleteFileAsync(userId, directory.Id, file.Id);
             }
         }
     }
@@ -227,13 +224,15 @@ public class DirectoryService : IDirectoryService
         Guid directoryId,
         CancellationToken cancellationToken = default)
     {
-        var directory = await _repositoryManager
+        var directories = await _repositoryManager
             .DirectoryRepository
-            .FindByCondition(x => x.UserId == userId && x.Id == directoryId, false)
-            .Include(x => x.Directories).ThenInclude(x => x.Directories)
-            .Include(x => x.Directories).ThenInclude(x => x.Files)
+            .FindAll(true)
+            .Include(x => x.Directories)
             .Include(x => x.Files)
-            .FirstOrDefaultAsync(cancellationToken);
+            .Where(x => x.UserId == userId)
+            .ToListAsync(cancellationToken);
+
+        var directory = directories.FirstOrDefault(x => x.Id == directoryId);
         
         if (directory is null)
         {
