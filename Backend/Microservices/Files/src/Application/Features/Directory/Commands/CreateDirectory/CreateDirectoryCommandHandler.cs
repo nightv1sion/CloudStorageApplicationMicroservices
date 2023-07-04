@@ -2,19 +2,19 @@
 using Files.Application.Features.Directory.Services;
 using MediatR;
 
-namespace Files.Application.Features.Directory.Commands.CreateUserDirectory;
+namespace Files.Application.Features.Directory.Commands.CreateDirectory;
 
-public class CreateUserDirectoryCommandHandler : IRequestHandler<CreateUserDirectoryCommand, DirectoryDto>
+public class CreateDirectoryCommandHandler : IRequestHandler<CreateDirectoryCommand, DirectoryDto>
 {
     private readonly IDirectoryService _directoryService;
 
-    public CreateUserDirectoryCommandHandler(
+    public CreateDirectoryCommandHandler(
         IDirectoryService directoryService)
     {
         _directoryService = directoryService;
     }
     public async Task<DirectoryDto> Handle(
-        CreateUserDirectoryCommand request, 
+        CreateDirectoryCommand request, 
         CancellationToken cancellationToken)
     {
         var directory = await _directoryService.CreateDirectoryAsync(

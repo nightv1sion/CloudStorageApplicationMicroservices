@@ -1,11 +1,11 @@
 ﻿using Files.Application.Features.Directory.DataTransferObjects;
 using MediatR;
 
-namespace Files.Application.Features.Directory.Queries.GetUserDirectory;
+namespace Files.Application.Features.Directory.Queries.GetDirectory;
 
-public class GetUserDirectoryQuery : IRequest<DirectoryDto>
+public class GetDirectoryQuery : IRequest<DirectoryDto>
 {
-    public GetUserDirectoryQuery(
+    public GetDirectoryQuery(
         Guid userId,
         Guid directoryId)
     {

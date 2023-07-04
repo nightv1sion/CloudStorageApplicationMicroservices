@@ -1,9 +1,9 @@
-﻿using Files.Application.Features.Directory.Commands.CreateUserDirectory;
-using Files.Application.Features.Directory.Commands.RemoveUserDirectory;
-using Files.Application.Features.Directory.Commands.UpdateUserDirectory;
+﻿using Files.Application.Features.Directory.Commands.CreateDirectory;
+using Files.Application.Features.Directory.Commands.RemoveDirectory;
+using Files.Application.Features.Directory.Commands.UpdateDirectory;
 using Files.Application.Features.Directory.DataTransferObjects;
-using Files.Application.Features.Directory.Queries.GetUserDirectories;
-using Files.Application.Features.Directory.Queries.GetUserDirectory;
+using Files.Application.Features.Directory.Queries.GetDirectories;
+using Files.Application.Features.Directory.Queries.GetDirectory;
 using MediatR;
 using Services.Authentication;
 
@@ -23,7 +23,7 @@ public static class DirectoriesEndpoints
             CancellationToken cancellationToken) =>
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
-            var directory = await mediator.Send(new GetUserDirectoryQuery(userId, id), cancellationToken);
+            var directory = await mediator.Send(new GetDirectoryQuery(userId, id), cancellationToken);
             return Results.Ok(directory);
         });
 
@@ -35,7 +35,7 @@ public static class DirectoriesEndpoints
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
             var directories = await mediator.Send(
-                new GetUserDirectoriesQuery(userId), cancellationToken);
+                new GetDirectoriesQuery(userId), cancellationToken);
             return Results.Ok(directories);
         });
         
@@ -47,7 +47,7 @@ public static class DirectoriesEndpoints
             CancellationToken cancellationToken) =>
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
-            var directory = await mediator.Send(new CreateUserDirectoryCommand(userId, dto), cancellationToken);
+            var directory = await mediator.Send(new CreateDirectoryCommand(userId, dto), cancellationToken);
             return Results.Ok(directory);
         });
 
@@ -60,7 +60,7 @@ public static class DirectoriesEndpoints
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
             var directory = await mediator.Send(
-                new UpdateUserDirectoryCommand(userId, dto), cancellationToken);
+                new UpdateDirectoryCommand(userId, dto), cancellationToken);
             return Results.Ok(directory);
         });
 
@@ -72,7 +72,7 @@ public static class DirectoriesEndpoints
             CancellationToken cancellationToken) =>
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
-            await mediator.Send(new RemoveUserDirectoryCommand(userId, id), cancellationToken);
+            await mediator.Send(new RemoveDirectoryCommand(userId, id), cancellationToken);
             return Results.Ok();
         });
 

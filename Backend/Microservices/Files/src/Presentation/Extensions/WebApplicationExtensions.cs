@@ -28,7 +28,7 @@ public static class WebApplicationExtensions
     {
         var scope = app.Services.CreateScope();
         var context = scope.ServiceProvider.GetService<ApplicationDatabaseContext>();
-        if (context.Database.IsRelational() && context.Database.GetPendingMigrations().Any() )
+        if (context is not null && context.Database.IsRelational() && context.Database.GetPendingMigrations().Any() )
         {
             context.Database.Migrate();
         }
