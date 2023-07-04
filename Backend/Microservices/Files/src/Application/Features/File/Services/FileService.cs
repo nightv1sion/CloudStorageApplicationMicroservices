@@ -57,14 +57,16 @@ public class FileService : IFileService
 
         return _mapper.Map<ICollection<FileDto>>(files);
     }
-    public async Task<FileDto> CreateFileAsync(
-        CreateFileDto dto, CancellationToken cancellationToken = default)
+    private async Task<FileDto> CreateFileAsync(
+        Guid userId,
+        CreateFileDto dto, 
+        CancellationToken cancellationToken = default)
     {
         if (dto.DirectoryId.HasValue)
         {
             var directory = await _repositoryManager
                 .DirectoryRepository
-                .FindSingleAsync(x => x.Id == dto.DirectoryId.Value, cancellationToken);
+                .FindSingleAsync(x => x.UserId == userId && x.Id == dto.DirectoryId.Value, cancellationToken);
             if (directory is null)
             {
                 throw new InvalidDirectoryIdBadRequestException(dto.DirectoryId.Value);
@@ -72,25 +74,27 @@ public class FileService : IFileService
         }
         
         var entity = _mapper.Map<Domain.Entities.File.File>(dto);
-
+        entity.UserId = userId;
         await _repositoryManager.FileRepository.CreateAsync(entity, cancellationToken);
-        
         await _repositoryManager.SaveChangesAsync(cancellationToken);
         
         _logger.LogInformation($"File with id: {entity.Id} created");
 
         return _mapper.Map<FileDto>(entity);
     }
-    public async Task UpdateFileAsync(
+    public async Task<FileDto> UpdateFileAsync(
         Guid userId, UpdateFileDto dto, CancellationToken cancellationToken = default)
     {
-        var file = await GetFileAsync(userId, dto.DirectoryId, dto.Id, cancellationToken);
-
+        var file = await FindFileAsync(userId, dto.DirectoryId, dto.Id, true, cancellationToken);
         _mapper.Map(dto, file);
+        file.Updated = DateTime.Now;
 
         await _repositoryManager.SaveChangesAsync(cancellationToken);
         
         _logger.LogInformation($"File with id: {file.Id} was updated");
+        
+        var resultDto = _mapper.Map<FileDto>(file);
+        return resultDto;
     }
 
     public async Task DeleteFileAsync(
@@ -117,11 +121,10 @@ public class FileService : IFileService
         
         _logger.LogInformation($"File with id: {file.Id} was deleted");
     }
-    public async Task UploadFileAsync(FormFileDto dto, Guid userId, CancellationToken cancellationToken = default)
+    public async Task<FileDto> UploadFileAsync(Guid userId, FormFileDto dto, CancellationToken cancellationToken = default)
     {
         var createFileDto = _mapper.Map<CreateFileDto>(dto);
-        createFileDto.UserId = userId;
-        var file = await CreateFileAsync(createFileDto, cancellationToken);
+        var file = await CreateFileAsync(userId, createFileDto, cancellationToken);
         await using var stream = new MemoryStream();
         await dto.File.CopyToAsync(stream, cancellationToken);
         var bytes = stream.ToArray();
@@ -132,6 +135,8 @@ public class FileService : IFileService
             Extension = file.Extension,
         }, cancellationToken);
         _logger.LogInformation("File created event published to RabbitMQ");
+
+        return file;
     }
 
     public async Task<DownloadFileDto> DownloadFileAsync(
@@ -180,8 +185,6 @@ public class FileService : IFileService
             }
         
             file = directory.Files.FirstOrDefault(x => x.Id == fileId);
-        
-            
         }
         else
         {

@@ -4,6 +4,8 @@ using Files.Application.Features.Directory.DataTransferObjects;
 using Files.Application.Features.File.Services;
 using Files.Infrastructure.Persistence;
 using Files.Infrastructure.Persistence.RepositoryManagers;
+using MassTransit;
+using MassTransitModels.File;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -15,17 +17,20 @@ public class DirectoryService : IDirectoryService
     private readonly IMapper _mapper;
     private readonly IRepositoryManager _repositoryManager;
     private readonly IFileService _fileService;
+    private readonly IPublishEndpoint _publishEndpoint;
 
     public DirectoryService(
         ILogger<DirectoryService> logger,
         IMapper mapper,
         IRepositoryManager repositoryManager, 
-        IFileService fileService)
+        IFileService fileService, 
+        IPublishEndpoint publishEndpoint)
     {
         _logger = logger;
         _mapper = mapper;
         _repositoryManager = repositoryManager;
         _fileService = fileService;
+        _publishEndpoint = publishEndpoint;
         _logger.LogInformation("Directory Service is called");
     }
 
@@ -179,7 +184,12 @@ public class DirectoryService : IDirectoryService
         {
             foreach (var file in directory.Files)
             {
-                await _fileService.DeleteFileAsync(userId, directory.Id, file.Id);
+                _repositoryManager.FileRepository.Remove(file);
+                await _publishEndpoint.Publish<FileDeleted>(new
+                {
+                    Name = file.Id.ToString(),
+                    Extension = file.Extension
+                });
             }
         }
     }

@@ -1,10 +1,10 @@
 ﻿using MediatR;
 
-namespace Files.Application.Features.Directory.Commands.RemoveUserDirectory;
+namespace Files.Application.Features.Directory.Commands.RemoveDirectory;
 
-public class RemoveUserDirectoryCommand : IRequest
+public class RemoveDirectoryCommand : IRequest
 {
-    public RemoveUserDirectoryCommand(
+    public RemoveDirectoryCommand(
         Guid userId,
         Guid directoryId)
     {

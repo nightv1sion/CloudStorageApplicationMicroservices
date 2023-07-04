@@ -2,19 +2,19 @@
 using Files.Application.Features.Directory.Services;
 using MediatR;
 
-namespace Files.Application.Features.Directory.Queries.GetUserDirectory;
+namespace Files.Application.Features.Directory.Queries.GetDirectory;
 
-public class GetUserDirectoryQueryHandler : IRequestHandler<GetUserDirectoryQuery, DirectoryDto>
+public class GetDirectoryQueryHandler : IRequestHandler<GetDirectoryQuery, DirectoryDto>
 {
     private readonly IDirectoryService _directoryService;
 
-    public GetUserDirectoryQueryHandler(
+    public GetDirectoryQueryHandler(
         IDirectoryService directoryService)
     {
         _directoryService = directoryService;
     }
     public async Task<DirectoryDto> Handle(
-        GetUserDirectoryQuery request, 
+        GetDirectoryQuery request, 
         CancellationToken cancellationToken)
     {
         var directory = await _directoryService.GetDirectoryAsync(

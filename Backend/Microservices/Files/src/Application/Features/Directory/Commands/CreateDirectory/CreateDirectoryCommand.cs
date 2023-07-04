@@ -1,11 +1,11 @@
 ﻿using Files.Application.Features.Directory.DataTransferObjects;
 using MediatR;
 
-namespace Files.Application.Features.Directory.Commands.CreateUserDirectory;
+namespace Files.Application.Features.Directory.Commands.CreateDirectory;
 
-public class CreateUserDirectoryCommand : IRequest<DirectoryDto>
+public class CreateDirectoryCommand : IRequest<DirectoryDto>
 {
-    public CreateUserDirectoryCommand(
+    public CreateDirectoryCommand(
         Guid userId, 
         CreateDirectoryDto dto)
     {

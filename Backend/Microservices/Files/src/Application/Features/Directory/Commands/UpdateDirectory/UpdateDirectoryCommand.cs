@@ -1,11 +1,11 @@
 ﻿using Files.Application.Features.Directory.DataTransferObjects;
 using MediatR;
 
-namespace Files.Application.Features.Directory.Commands.UpdateUserDirectory;
+namespace Files.Application.Features.Directory.Commands.UpdateDirectory;
 
-public class UpdateUserDirectoryCommand : IRequest<DirectoryDto>
+public class UpdateDirectoryCommand : IRequest<DirectoryDto>
 {
-    public UpdateUserDirectoryCommand(
+    public UpdateDirectoryCommand(
         Guid userId,
         UpdateDirectoryDto dto)
     {
