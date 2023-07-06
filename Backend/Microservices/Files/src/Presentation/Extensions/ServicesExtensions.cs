@@ -1,14 +1,12 @@
 ﻿using System.Reflection;
 using DatabaseInfrastructure.Helper;
+using Files.Application.Extensions.Interfaces;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
-using Files.Application.Features.Directory.Services;
-using Files.Application.Features.File.Services;
+using Files.Application.Extensions.Services;
 using Files.Infrastructure.Messaging.Consumers;
 using Files.Infrastructure.Persistence;
 using Files.Infrastructure.Persistence.RepositoryManagers;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Directory = Files.Domain.Entities.Directory.Directory;
 
 namespace Files.Presentation.Extensions;
 

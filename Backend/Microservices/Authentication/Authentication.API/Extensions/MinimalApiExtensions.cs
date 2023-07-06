@@ -29,7 +29,6 @@ public static class MinimalApiExtensions
                             element => element.Description).ToArray()), 
                     statusCode: StatusCodes.Status422UnprocessableEntity);
             }
-
             return Results.Ok("User successfully created");
         }).AddEndpointFilter<ValidationFilter<RegisterUserDTO>>();
 

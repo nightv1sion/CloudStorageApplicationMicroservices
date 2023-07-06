@@ -14,5 +14,5 @@ app.MapFilesEndpoints();
 app.MapDirectoryFilesEndpoints();
 
 app.MapDirectoriesEndpoints();
-
+app.MapDirectoriesByParentEndpoints();
 app.Run();

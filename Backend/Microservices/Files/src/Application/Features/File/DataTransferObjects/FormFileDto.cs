@@ -14,6 +14,10 @@ public class FormFileDto
         var directoryIdFormValue = context.Request.Form["DirectoryId"].FirstOrDefault();
         Guid? directoryId = String.IsNullOrEmpty(directoryIdFormValue) ? null : Guid.Parse(directoryIdFormValue);
         var file = context.Request.Form.Files.GetFile("File");
+        if (file is null)
+        {
+            return ValueTask.FromResult(new FormFileDto());
+        }
         var name = Path.GetFileNameWithoutExtension(file.FileName);
         var extension = Path.GetExtension(file.FileName);
         return ValueTask.FromResult(new FormFileDto()

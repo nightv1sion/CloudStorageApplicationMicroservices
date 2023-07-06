@@ -1,4 +1,7 @@
-﻿using Serilog;
+﻿using System.Reflection;
+using Files.Application.Common.Exceptions;
+using FluentValidation;
+using Serilog;
 using Services.Authentication;
 
 namespace Files.Presentation.Extensions;
@@ -18,7 +21,8 @@ public static class WebApplicationBuilderExtensions
         builder.Services.ConfigureAuthentication();
         builder.Services.ConfigureServices();
         builder.Services.ConfigureMassTransit(builder.Configuration);
-        builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        builder.Services.AddAutoMapper(typeof(InvalidFileIdBadRequestException).Assembly);
+        builder.Services.AddValidatorsFromAssembly(typeof(InvalidFileIdBadRequestException).Assembly);
         
         return builder;
     }

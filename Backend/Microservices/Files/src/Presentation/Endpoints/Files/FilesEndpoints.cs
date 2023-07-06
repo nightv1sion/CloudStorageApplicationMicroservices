@@ -5,7 +5,8 @@ using Files.Application.Features.File.DataTransferObjects;
 using Files.Application.Features.File.Queries.DownloadFile;
 using Files.Application.Features.File.Queries.GetFile;
 using Files.Application.Features.File.Queries.GetFiles;
-using Files.Application.Features.File.Services;
+using Files.Application.Extensions.Services;
+using Files.Presentation.Filters;
 using MediatR;
 using Services.Authentication;
 
@@ -52,7 +53,7 @@ public static class FilesEndpoints
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
             var file = await mediator.Send(new UpdateFileCommand(userId, dto), cancellationToken);
             return Results.Ok(file);
-        });
+        }).AddEndpointFilter<ValidationFilter<UpdateFileDto>>();
 
         group.MapPost("upload", async (
             FormFileDto dto,
@@ -64,7 +65,7 @@ public static class FilesEndpoints
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
             var file = await mediator.Send(new UploadFileCommand(userId, dto), cancellationToken);
             return Results.Ok(file);
-        }).Accepts<FormFileDto>("multipart/form-data");
+        }).Accepts<FormFileDto>("multipart/form-data").AddEndpointFilter<ValidationFilter<FormFileDto>>();
 
         group.MapGet("{id:guid}/download", async (
             Guid id,
@@ -102,11 +103,11 @@ public static class FilesEndpoints
             Guid directoryId,
             HttpContext httpContext,
             IAuthenticationService authenticationService,
-            IFileService fileService,
+            IMediator mediator,
             CancellationToken cancellationToken) =>
         {
             var userId = authenticationService.GetUserIdFromHeaders(httpContext);
-            var file = await fileService.GetFileAsync(userId, directoryId, id, cancellationToken);
+            var file = await mediator.Send(new GetFileQuery(userId, directoryId, id), cancellationToken);
             return Results.Ok(file);
         });
 

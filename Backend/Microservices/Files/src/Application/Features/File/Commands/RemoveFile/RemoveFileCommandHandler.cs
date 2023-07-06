@@ -1,4 +1,4 @@
-﻿using Files.Application.Features.File.Services;
+﻿using Files.Application.Extensions.Interfaces;
 using MediatR;
 
 namespace Files.Application.Features.File.Commands.RemoveFile;
