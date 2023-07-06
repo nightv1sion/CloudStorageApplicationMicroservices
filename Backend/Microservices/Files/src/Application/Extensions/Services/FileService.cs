@@ -1,15 +1,15 @@
 ﻿using AutoMapper;
 using Files.Application.Common.Exceptions;
+using Files.Application.Extensions.Interfaces;
 using MassTransit;
 using MassTransitModels.File;
 using Microsoft.EntityFrameworkCore;
 using Models.File;
 using Files.Application.Features.File.DataTransferObjects;
-using Files.Infrastructure.Persistence;
 using Files.Infrastructure.Persistence.RepositoryManagers;
 using Microsoft.Extensions.Logging;
 
-namespace Files.Application.Features.File.Services;
+namespace Files.Application.Extensions.Services;
 public class FileService : IFileService
 {
     private readonly IMapper _mapper;

@@ -1,5 +1,5 @@
-﻿using Files.Application.Features.Directory.DataTransferObjects;
-using Files.Application.Features.Directory.Services;
+﻿using Files.Application.Extensions.Interfaces;
+using Files.Application.Features.Directory.DataTransferObjects;
 using MediatR;
 
 namespace Files.Application.Features.Directory.Commands.UpdateDirectory;

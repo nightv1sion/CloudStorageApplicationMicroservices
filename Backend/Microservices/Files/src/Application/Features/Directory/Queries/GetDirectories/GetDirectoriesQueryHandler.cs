@@ -1,5 +1,5 @@
-﻿using Files.Application.Features.Directory.DataTransferObjects;
-using Files.Application.Features.Directory.Services;
+﻿using Files.Application.Extensions.Interfaces;
+using Files.Application.Features.Directory.DataTransferObjects;
 using MediatR;
 
 namespace Files.Application.Features.Directory.Queries.GetDirectories;
@@ -18,7 +18,7 @@ public class GetDirectoriesQueryHandler
         GetDirectoriesQuery request, CancellationToken cancellationToken)
     {
         var directories = await _directoryService.GetDirectoriesAsync(
-            request.UserId, false, cancellationToken);
+            request.UserId, request.ParentDirectoryId,false, cancellationToken);
 
         return directories;
     }

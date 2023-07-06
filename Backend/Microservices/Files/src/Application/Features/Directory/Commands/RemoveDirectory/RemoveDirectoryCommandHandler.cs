@@ -1,4 +1,4 @@
-﻿using Files.Application.Features.Directory.Services;
+﻿using Files.Application.Extensions.Interfaces;
 using MediatR;
 
 namespace Files.Application.Features.Directory.Commands.RemoveDirectory;
@@ -16,6 +16,7 @@ public class RemoveDirectoryCommandHandler : IRequestHandler<RemoveDirectoryComm
         RemoveDirectoryCommand request, 
         CancellationToken cancellationToken)
     {
-        await _directoryService.DeleteDirectoryAsync(request.UserId, request.DirectoryId, cancellationToken);
+        await _directoryService.DeleteDirectoryAsync(request.UserId, request.ParentDirectoryId, request.DirectoryId,
+            cancellationToken);
     }
 }

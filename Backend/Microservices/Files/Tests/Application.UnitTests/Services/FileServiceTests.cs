@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using Files.Application.Common.Exceptions;
 using Files.Application.Features.File;
-using Files.Application.Features.File.Services;
+using Files.Application.Extensions.Services;
 using Files.Infrastructure.Persistence;
 using Files.Infrastructure.Persistence.RepositoryManagers;
 using MassTransit;

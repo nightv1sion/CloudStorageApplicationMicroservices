@@ -1,6 +1,6 @@
 ﻿using Files.Application.Features.File.DataTransferObjects;
 
-namespace Files.Application.Features.File.Services;
+namespace Files.Application.Extensions.Interfaces;
 public interface IFileService
 {
     Task<FileDto> GetFileAsync(Guid userId, Guid? directoryId, Guid fileId, 

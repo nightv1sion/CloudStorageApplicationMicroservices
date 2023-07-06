@@ -1,15 +1,14 @@
 ﻿using AutoMapper;
 using Files.Application.Common.Exceptions;
+using Files.Application.Extensions.Interfaces;
 using Files.Application.Features.Directory.DataTransferObjects;
-using Files.Application.Features.File.Services;
-using Files.Infrastructure.Persistence;
 using Files.Infrastructure.Persistence.RepositoryManagers;
 using MassTransit;
 using MassTransitModels.File;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Files.Application.Features.Directory.Services;
+namespace Files.Application.Extensions.Services;
 
 public class DirectoryService : IDirectoryService
 {
@@ -35,14 +34,19 @@ public class DirectoryService : IDirectoryService
     }
 
     public async Task<DirectoryDto> GetDirectoryAsync(
-        Guid userId, Guid directoryId, CancellationToken cancellationToken = default)
+        Guid userId, 
+        Guid? parentDirectoryId, 
+        Guid directoryId, 
+        CancellationToken cancellationToken = default)
     {
-        var directory = await FindDirectoryWithChildElementsAsync(userId, directoryId, cancellationToken);
+        var directory = await FindDirectoryWithChildElementsAsync(
+            userId,  parentDirectoryId, directoryId, cancellationToken);
         var dto = _mapper.Map<DirectoryDto>(directory);
         return dto;
     }
     public async Task<ICollection<DirectoryDto>> GetDirectoriesAsync(
-        Guid userId, 
+        Guid userId,
+        Guid? parentDirectoryId,
         bool trackChanges = false,
         CancellationToken cancellationToken = default)
     {
@@ -50,7 +54,7 @@ public class DirectoryService : IDirectoryService
             .FindAll(trackChanges)
             .Include(x => x.Files)
             .Include(x => x.Directories)
-            .Where(x => x.UserId == userId)
+            .Where(x => x.UserId == userId && x.ParentDirectoryId == parentDirectoryId)
             .ToListAsync(cancellationToken);
         
         return _mapper.Map<ICollection<DirectoryDto>>(directories);
@@ -113,7 +117,8 @@ public class DirectoryService : IDirectoryService
         UpdateDirectoryDto dto,
         CancellationToken cancellationToken = default)
     {
-        var directory = await FindDirectoryWithChildElementsAsync(userId, dto.Id, cancellationToken);
+        var directory = await FindDirectoryWithChildElementsAsync(
+            userId, dto.ParentDirectoryId,dto.Id, cancellationToken);
 
         _mapper.Map(dto, directory);
         
@@ -159,10 +164,12 @@ public class DirectoryService : IDirectoryService
     }
     public async Task DeleteDirectoryAsync(
         Guid userId, 
+        Guid? parentDirectoryId,
         Guid directoryId,
         CancellationToken cancellationToken = default)
     {
-        var directory = await FindDirectoryWithNestedElementsAsync(userId, directoryId, cancellationToken);
+        var directory = await FindDirectoryWithNestedElementsAsync(
+            userId,  parentDirectoryId, directoryId, cancellationToken);
         await RemoveNestedElements(directory, userId);
         _repositoryManager.DirectoryRepository.Remove(directory);
         await _repositoryManager.SaveChangesAsync(cancellationToken);
@@ -211,12 +218,14 @@ public class DirectoryService : IDirectoryService
 
     private async Task<Domain.Entities.Directory.Directory> FindDirectoryWithChildElementsAsync(
         Guid userId,
+        Guid? parentDirectoryId,
         Guid directoryId,
         CancellationToken cancellationToken = default)
     {
         var directory = await _repositoryManager
             .DirectoryRepository
-            .FindByCondition(x => x.UserId == userId && x.Id == directoryId, false)
+            .FindByCondition(x => x.UserId == userId 
+                                  && x.Id == directoryId && x.ParentDirectoryId == parentDirectoryId, false)
             .Include(x => x.Directories)
             .Include(x => x.Files)
             .FirstOrDefaultAsync(cancellationToken);
@@ -231,6 +240,7 @@ public class DirectoryService : IDirectoryService
     
     private async Task<Domain.Entities.Directory.Directory> FindDirectoryWithNestedElementsAsync(
         Guid userId,
+        Guid? parentDirectoryId,
         Guid directoryId,
         CancellationToken cancellationToken = default)
     {
@@ -239,7 +249,7 @@ public class DirectoryService : IDirectoryService
             .FindAll(true)
             .Include(x => x.Directories)
             .Include(x => x.Files)
-            .Where(x => x.UserId == userId)
+            .Where(x => x.UserId == userId && x.ParentDirectoryId == parentDirectoryId)
             .ToListAsync(cancellationToken);
 
         var directory = directories.FirstOrDefault(x => x.Id == directoryId);
