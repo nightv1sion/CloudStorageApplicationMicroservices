@@ -1,8 +1,9 @@
-﻿using File = Files.Domain.Entities.File.File;
+﻿using Files.Infrastructure.Persistence.Repository.Interfaces;
+using File = Files.Domain.Entities.File.File;
 
 namespace Files.Infrastructure.Persistence.Repositories;
 
-public class FileRepository : RepositoryBase<File>
+public class FileRepository : RepositoryBase<File>, IFileRepository
 {
     public FileRepository(
         ApplicationDatabaseContext context) : base(context)

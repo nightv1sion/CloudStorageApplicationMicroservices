@@ -1,21 +1,21 @@
 ﻿using AutoMapper;
 using Files.Application.Common.Exceptions;
+using Files.Application.Extensions.Interfaces;
 using Files.Application.Features.File;
 using Files.Application.Extensions.Services;
-using Files.Infrastructure.Persistence;
 using Files.Infrastructure.Persistence.RepositoryManagers;
 using MassTransit;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using MockQueryable.Moq;
 using Models.File;
 using Moq;
-using Moq.EntityFrameworkCore;
+using Directory = Files.Domain.Entities.Directory.Directory;
 using File = Files.Domain.Entities.File.File;
 namespace Application.UnitTests.Services;
 
 public class FileServiceTests
 {
-    /*private readonly IFileService _service;
+    private readonly IFileService _service;
     private readonly IMapper _mapper;
     private readonly Mock<IPublishEndpoint> _publishEndpoint;
     private readonly Mock<IRequestClient<RetrieveFile>> _client;
@@ -39,62 +39,42 @@ public class FileServiceTests
     [Fact]
     public async Task GetFile_NotExistingFileId_ThrowsInvalidFileIdBadRequest()
     {
-        _context.Setup<DbSet<File>>(expression: x =>
-            x.Files)
-            .ReturnsDbSet(new List<File>());
+        _repositoryManager.Setup(x => x.DirectoryRepository.FindAll(It.IsAny<bool>()))
+            .Returns(Enumerable.Empty<Directory>().AsQueryable().BuildMock());
 
-        var func = async () => await _service.GetFileAsync(Guid.NewGuid(), Guid.NewGuid());
+        var func = async () => await _service.GetFileAsync(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid());
 
-        await Assert.ThrowsAsync<InvalidFileIdBadRequestException>(func);
+        await Assert.ThrowsAsync<InvalidDirectoryIdBadRequestException>(func);
     }
     [Fact]
     public async Task GetFile_ExistingFileId_ReturnsValidFile()
     {
-        var fileId = Guid.NewGuid();
         var userId = Guid.NewGuid();
+        var directoryId = Guid.NewGuid();
+        var fileId = Guid.NewGuid();
         var file = new File()
         {
             Id = fileId,
             UserId = userId,
+            DirectoryId = directoryId
         };
         
-        _context.Setup<DbSet<File>>(
-                expression: x => x.Files)
-            .ReturnsDbSet(new List<File> { file });
+        var directoriesList = new List<Directory>()
+        {
+            new()
+            {
+                Id = directoryId,
+                UserId = userId,
+                Files = new List<File>{file}
+            }
+        };
 
-        var result = await _service.GetFileAsync(userId, fileId);
+
+        _repositoryManager.Setup(x => x.DirectoryRepository.FindAll(It.IsAny<bool>()))
+            .Returns(directoriesList.AsQueryable().BuildMock());
+
+        var result = await _service.GetFileAsync(userId, directoryId, fileId);
         
         Assert.Equal(file.Id, result.Id);
     }
-    [Fact]
-    public async Task GetFilesByUserId_UserIdWithFiles_ReturnsValidFiles()
-    {
-        var fileId = Guid.NewGuid();
-        var userId = Guid.NewGuid();
-        var validFiles = new List<File>()
-        {
-            new() { UserId = userId },
-            new() { UserId = userId },
-            new() { UserId = userId },
-            new() { UserId = userId },
-        };
-
-        var invalidFiles = new List<File>()
-        {
-            new() { UserId = Guid.NewGuid() },
-            new() { UserId = Guid.NewGuid() },
-            new() { UserId = Guid.NewGuid() },
-        };
-
-        var files = validFiles.Concat(invalidFiles).ToList();
-        
-        _context.Setup<DbSet<File>>(
-                expression: x => x.Files)
-            .ReturnsDbSet(files);
-
-        var result = await _service.GetFilesAsync(userId);
-        
-        Assert.Equal(validFiles.Count, result.Count);
-        Assert.True(result.Select(x => x.Id).SequenceEqual(validFiles.Select(x => x.Id)));
-    }*/
 }

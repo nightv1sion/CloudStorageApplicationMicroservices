@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using DatabaseInfrastructure.Helper;
+using Files.Application.Common.Behaviours;
 using Files.Application.Extensions.Interfaces;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using Files.Application.Extensions.Services;
 using Files.Infrastructure.Messaging.Consumers;
 using Files.Infrastructure.Persistence;
 using Files.Infrastructure.Persistence.RepositoryManagers;
+using MediatR;
 
 namespace Files.Presentation.Extensions;
 
@@ -45,6 +47,7 @@ public static class ServicesExtensions
     {
         services.AddScoped<IFileService, FileService>();
         services.AddScoped<IDirectoryService, DirectoryService>();
+        services.AddSingleton(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
     }
 
     public static void ConfigureMassTransit(this IServiceCollection services, IConfiguration configuration)
