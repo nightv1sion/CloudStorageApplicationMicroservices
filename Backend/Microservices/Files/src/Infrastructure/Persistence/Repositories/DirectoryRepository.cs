@@ -1,8 +1,9 @@
-﻿using Directory = Files.Domain.Entities.Directory.Directory;
+﻿using Files.Infrastructure.Persistence.Repository.Interfaces;
+using Directory = Files.Domain.Entities.Directory.Directory;
 
 namespace Files.Infrastructure.Persistence.Repositories;
 
-public class DirectoryRepository : RepositoryBase<Directory>
+public class DirectoryRepository : RepositoryBase<Directory>, IDirectoryRepository
 {
     public DirectoryRepository(
         ApplicationDatabaseContext context) : base(context)

@@ -1,4 +1,5 @@
 ﻿using Files.Infrastructure.Persistence.Repositories;
+using Files.Infrastructure.Persistence.Repository.Interfaces;
 
 namespace Files.Infrastructure.Persistence.RepositoryManagers;
 
@@ -15,8 +16,8 @@ public class RepositoryManager : IRepositoryManager
         _fileRepository = new Lazy<FileRepository>(() => new FileRepository(context));
     }
 
-    public FileRepository FileRepository => _fileRepository.Value;
-    public DirectoryRepository DirectoryRepository => _directoryRepository.Value;
+    public IFileRepository FileRepository => _fileRepository.Value;
+    public IDirectoryRepository DirectoryRepository => _directoryRepository.Value;
     
     public async Task SaveChangesAsync(CancellationToken cancellationToken = default)
     {
