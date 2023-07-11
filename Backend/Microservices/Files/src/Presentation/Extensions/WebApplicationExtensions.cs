@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Files.Infrastructure.Persistence;
+using Middlewares.Authentication;
 using Middlewares.ExceptionHandling;
 using Serilog;
 
@@ -19,6 +20,8 @@ public static class WebApplicationExtensions
         }
 
         app.UseHttpsRedirection();
+
+        app.UseMiddleware<JwtAuthenticationMiddleware>();
 
         app.UseMiddleware<ExceptionHandlingMiddleware>();
 
