@@ -18,7 +18,6 @@ public static class WebApplicationBuilderExtensions
         builder.Services.ConfigureDatabaseContext(builder.Configuration);
         builder.Services.ConfigureMediator();
         builder.Services.ConfigureRepositories();
-        builder.Services.ConfigureAuthentication();
         builder.Services.ConfigureServices();
         builder.Services.ConfigureMassTransit(builder.Configuration);
         builder.Services.AddAutoMapper(typeof(InvalidFileIdBadRequestException).Assembly);
