@@ -2,7 +2,7 @@
 using Files.Domain.Enums;
 using Files.Infrastructure.Persistence;
 using MassTransit;
-using MassTransitModels.File;
+using QueueMessaging.File;
 
 namespace Files.Infrastructure.Messaging.Consumers;
 public class FileCreatedFaultConsumer : IConsumer<Fault<FileCreated>>

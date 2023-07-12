@@ -2,7 +2,7 @@
 using Files.Application.Common.Exceptions;
 using Files.Application.Extensions.Interfaces;
 using MassTransit;
-using MassTransitModels.File;
+using QueueMessaging.File;
 using Microsoft.EntityFrameworkCore;
 using Models.File;
 using Files.Application.Features.File.DataTransferObjects;

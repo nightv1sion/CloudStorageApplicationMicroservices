@@ -1,5 +1,5 @@
 ﻿using MassTransit;
-using MassTransitModels.File;
+using QueueMessaging.File;
 using Storage.API.Services.Contracts;
 
 namespace Storage.API.MassTransit.Consumers;

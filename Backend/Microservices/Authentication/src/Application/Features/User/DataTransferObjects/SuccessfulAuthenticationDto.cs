@@ -1,0 +1,10 @@
+﻿using System.IdentityModel.Tokens.Jwt;
+
+namespace Authentication.Application.Features.User.DataTransferObjects;
+
+public class SuccessfulAuthenticationDto
+{
+    public string Token { get; set; }
+    public string RefreshToken { get; set; }
+    public DateTime ValidTo { get; set; }
+}

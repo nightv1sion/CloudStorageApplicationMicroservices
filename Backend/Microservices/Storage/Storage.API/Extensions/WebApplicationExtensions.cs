@@ -1,4 +1,5 @@
-﻿using Serilog;
+﻿using Middlewares.Authentication;
+using Serilog;
 
 namespace Storage.API.Extensions;
 
@@ -15,6 +16,8 @@ public static class WebApplicationExtensions
         }
 
         app.UseHttpsRedirection();
+
+        app.UseMiddleware<JwtAuthenticationMiddleware>();
 
         return app;
     }
