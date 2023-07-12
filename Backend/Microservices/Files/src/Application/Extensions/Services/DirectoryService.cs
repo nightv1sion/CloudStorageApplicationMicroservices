@@ -4,7 +4,7 @@ using Files.Application.Extensions.Interfaces;
 using Files.Application.Features.Directory.DataTransferObjects;
 using Files.Infrastructure.Persistence.RepositoryManagers;
 using MassTransit;
-using MassTransitModels.File;
+using QueueMessaging.File;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

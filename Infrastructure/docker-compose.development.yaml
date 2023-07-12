@@ -1,0 +1,110 @@
+﻿version: "3.9"
+services:
+  authentication-microservice-api:
+    container_name: authentication-microservice-api
+    build:
+      context: ../Backend
+      dockerfile: ../Backend/Microservices/Authentication/Authentication.API/Dockerfile
+    ports:
+      - "5001:80"
+    depends_on:
+      - authentication-microservice-database
+    networks:
+      - authentication-microservice-network
+      - ocelot-gateway-network
+    env_file:
+      - environment/authentication-microservice/api.env
+    volumes:
+      - logs:/logs
+
+  authentication-microservice-database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: authentication-microservice-database
+    ports:
+      - "1433:1433"
+    networks:
+      - authentication-microservice-network
+    env_file:
+      - environment/authentication-microservice/database.env
+  
+  files-microservice-api:
+    container_name: files-microservice-api
+    build:
+      context: ../Backend
+      dockerfile: ../Backend/Microservices/Files/src/Presentation/Dockerfile
+    ports:
+      - "5002:80"
+    depends_on:
+      - files-microservice-database
+    networks:
+      - files-microservice-network
+      - ocelot-gateway-network
+      - rabbit-mq-network
+    env_file:
+      - environment/files-microservice/api.env
+    volumes:
+      - logs:/logs
+  
+  files-microservice-database:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: files-microservice-database
+    ports:
+      - "1434:1433"
+    networks:
+      - files-microservice-network
+    env_file:
+      - environment/files-microservice/database.env
+  
+  storage-microservice-api:
+    container_name: storage-microservice-api
+    build:
+      context: ../Backend
+      dockerfile: ../Backend/Microservices/Storage/Storage.API/Dockerfile
+    ports:
+      - "5003:80"
+    env_file:
+      - environment/storage-microservice/api.env
+    volumes:
+      - storage-microservice-volume:/app/storage/files
+      - logs:/logs
+    networks:
+      - rabbit-mq-network
+  
+  ocelot-api-gateway:
+    container_name: ocelot-api-gateway
+    build:
+      context: ../Backend
+      dockerfile: ../Backend/ApiGateways/OcelotApiGateway/Dockerfile
+    ports:
+      - "5004:80"
+    volumes:
+      - logs:/logs
+    networks:
+      - ocelot-gateway-network
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+  
+  rabbitmq:
+    image: masstransit/rabbitmq
+    hostname: rabbitmq-host
+    restart: always
+    env_file:
+      - environment/rabbit-mq/.env
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    networks:
+      - rabbit-mq-network
+
+networks:
+  authentication-microservice-network:
+  files-microservice-network:
+  rabbit-mq-network:
+  ocelot-gateway-network:
+
+volumes:
+  logs:
+  storage-microservice-volume:
+  

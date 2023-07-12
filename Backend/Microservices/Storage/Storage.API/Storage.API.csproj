@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\..\Shared\MassTransitModels\MassTransitModels.csproj" />
+      <ProjectReference Include="..\..\..\Shared\QueueMessaging\QueueMessaging.csproj" />
       <ProjectReference Include="..\..\..\Shared\Services\Services.csproj" />
     </ItemGroup>
 
