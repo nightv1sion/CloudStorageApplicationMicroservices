@@ -4,7 +4,7 @@ services:
     container_name: authentication-microservice-api
     build:
       context: ../Backend
-      dockerfile: ../Backend/Microservices/Authentication/Authentication.API/Dockerfile
+      dockerfile: ../Backend/Microservices/Authentication/src/Presentation/Dockerfile
     ports:
       - "5001:80"
     depends_on:
