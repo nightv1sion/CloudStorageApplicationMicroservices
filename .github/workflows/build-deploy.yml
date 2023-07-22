@@ -25,7 +25,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./Backend
-          file: ./Backend/Microservices/Authentication/src/Presentation/file
+          file: ./Backend/Microservices/Authentication/src/Presentation/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/authentication-microservice-api
           
@@ -33,15 +33,15 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./Backend
-          file: ./Backend/Microservices/Files/src/Presentation/file
+          file: ./Backend/Microservices/Dockerfiles/src/Presentation/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/files-microservice-api
+          tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/Dockerfiles-microservice-api
 
       - name: 'Build & Deploy Storage Microservice'
         uses: docker/build-push-action@v4
         with:
           context: ./Backend
-          file: ./Backend/Microservices/Storage/src/Presentation/file
+          file: ./Backend/Microservices/Storage/src/Presentation/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/storage-microservice-api
           
@@ -49,6 +49,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./Backend
-          file: ./Backend/ApiGateways/OcelotApiGateway/file
+          file: ./Backend/ApiGateways/OcelotApiGateway/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/ocelot-api-gateway
