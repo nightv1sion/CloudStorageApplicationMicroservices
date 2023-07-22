@@ -25,31 +25,30 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./Backend
-          dockerfile: ./Backend/Microservices/Authentication/src/Presentation/Dockerfile
+          file: ./Backend/Microservices/Authentication/src/Presentation/Dockerfile
           push: true
-          tags: ${{ DOCKER_REGISTER }}/${{ secrets.REGISTER_USERNAME }}/authentication-microservice-api
+          tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/authentication-microservice-api
           
       - name: 'Build & Deploy Files Microservice'
         uses: docker/build-push-action@v4
         with:
           context: ./Backend
-          dockerfile: ./Backend/Microservices/Files/src/Presentation/Dockerfile
+          file: ./Backend/Microservices/Files/src/Presentation/Dockerfile
           push: true
-          tags: ${{ DOCKER_REGISTER }}/${{ secrets.REGISTER_USERNAME }}/files-microservice-api
+          tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/files-microservice-api
 
       - name: 'Build & Deploy Storage Microservice'
         uses: docker/build-push-action@v4
         with:
           context: ./Backend
-          dockerfile: ./Backend/Microservices/Storage/src/Presentation/Dockerfile
+          file: ./Backend/Microservices/Storage/Storage.API/Dockerfile
           push: true
-          tags: ${{ DOCKER_REGISTER }}/${{ secrets.REGISTER_USERNAME }}/storage-microservice-api
+          tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/storage-microservice-api
           
       - name: 'Build & Deploy API Gateway'
         uses: docker/build-push-action@v4
         with:
           context: ./Backend
-          dockerfile: ./Backend/ApiGateways/OcelotApiGateway/Dockerfile
+          file: ./Backend/ApiGateways/OcelotApiGateway/Dockerfile
           push: true
-          tags: ${{ DOCKER_REGISTER }}/${{ secrets.REGISTER_USERNAME }}/ocelot-api-gateway
-      
+          tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/ocelot-api-gateway
