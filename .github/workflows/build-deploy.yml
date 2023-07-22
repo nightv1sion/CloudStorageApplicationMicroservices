@@ -41,7 +41,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./Backend
-          file: ./Backend/Microservices/Storage/src/Presentation/Dockerfile
+          file: ./Backend/Microservices/Storage/Storage.API/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/storage-microservice-api
           
