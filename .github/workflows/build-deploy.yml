@@ -33,7 +33,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: ./Backend
-          file: ./Backend/Microservices/Dockerfiles/src/Presentation/Dockerfile
+          file: ./Backend/Microservices/Files/src/Presentation/Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_REGISTRY }}/${{ secrets.REGISTRY_USERNAME }}/Dockerfiles-microservice-api
 
