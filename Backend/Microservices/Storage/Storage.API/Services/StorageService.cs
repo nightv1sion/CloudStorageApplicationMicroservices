@@ -58,7 +58,7 @@ public class StorageService : IStorageService
     }
     private string GetFolderPath()
     {
-        var storagePath = _configuration["STORAGEPATH"];
+        var storagePath = _configuration["Storage:Path"]!;
         if (_fileSystemService.CheckIfDirectoryExists(storagePath) is false)
         {
             _fileSystemService.CreateDirectory(storagePath);

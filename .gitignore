@@ -2,5 +2,4 @@
 .idea
 obj
 .vs
-*.sln
 *.sln.DotSettings.user

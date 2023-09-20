@@ -26,11 +26,11 @@ public static class ServiceExtensions
                 (context, config) =>
                 {
                     config.Host(
-                        configuration["RABBIT_MQ_HOSTNAME"],
-                        configuration["RABBIT_MQ_VIRTUAL_HOST"], c =>
+                        configuration["RabbitMQ:Host"],
+                        configuration["RabbitMQ:VirtualHost"], c =>
                         {
-                            c.Username(configuration["RABBIT_MQ_USERNAME"]);
-                            c.Password(configuration["RABBIT_MQ_PASSWORD"]);
+                            c.Username(configuration["RabbitMQ:Username"]);
+                            c.Password(configuration["RabbitMQ:Password"]);
                         });
                     config.ReceiveEndpoint("file-created-event",
                         endpoint =>
