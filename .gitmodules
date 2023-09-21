@@ -10,3 +10,6 @@
 [submodule "Backend/Microservices/Files"]
 	path = Backend/Microservices/Files
 	url = https://github.com/nightv1sion/night-cloud-backend-microservices-files
+[submodule "Backend/Microservices/Storage"]
+	path = Backend/Microservices/Storage
+	url = https://github.com/nightv1sion/night-cloud-backend-microservices-storage
