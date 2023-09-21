@@ -1,3 +1,6 @@
 [submodule "Infrastructure"]
 	path = Infrastructure
 	url = https://github.com/nightv1sion/night-cloud-infrastructure
+[submodule "Backend/ApiGateways/OcelotApiGateway"]
+	path = Backend/ApiGateways/OcelotApiGateway
+	url = https://github.com/nightv1sion/night-cloud-backend-api-gateways-ocelot-api-gateway
