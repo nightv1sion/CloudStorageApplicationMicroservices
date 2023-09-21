@@ -25,10 +25,10 @@ public class TokenService : ITokenService
     }
     public JwtSecurityToken CreateToken(List<Claim> authClaims)
     {
-        var jwtSecret = _configuration["JWT_SECRET"];
+        var jwtSecret = _configuration["JWT:Secret"];
         if (string.IsNullOrEmpty(jwtSecret))
         {
-            throw new InvalidOperationException("Environment variable JWT_SECRET does not exists");
+            throw new InvalidOperationException("Environment variable JWT:Secret does not exists");
         }
         var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret));
         if (!int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int tokenValidityInMinutes))
@@ -55,10 +55,10 @@ public class TokenService : ITokenService
 
     public (ClaimsPrincipal claimsPrincipal, DateTime validTo) GetPrincipalFromAccessToken(string token)
     {
-        var jwtSecret = _configuration["JWT_SECRET"];
+        var jwtSecret = _configuration["JWT:Secret"];
         if (string.IsNullOrEmpty(jwtSecret))
         {
-            throw new InvalidOperationException("Environment variable JWT_SECRET does not exists");
+            throw new InvalidOperationException("Environment variable JWT:Secret does not exists");
         }
         var tokenValidationParameters = new TokenValidationParameters()
         {

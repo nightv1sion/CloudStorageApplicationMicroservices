@@ -26,7 +26,7 @@ public static class ServiceExtensions
                 (context, config) =>
                 {
                     config.Host(
-                        configuration["RabbitMQ:Host"],
+                        configuration["RabbitMQ:Host"], // RabbitMQ__Host
                         configuration["RabbitMQ:VirtualHost"], c =>
                         {
                             c.Username(configuration["RabbitMQ:Username"]);

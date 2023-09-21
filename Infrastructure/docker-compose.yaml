@@ -5,65 +5,57 @@ services:
     image: ${DOCKER_REGISTRY}/authentication-microservice-api:latest
     ports:
       - "5001:80"
-    depends_on: 
-      - authentication-microservice-database
     networks:
       - authentication-microservice-network
       - ocelot-gateway-network
     environment:
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
+      ConnectionStrings__PostgresDatabase: ${ AUTHENTICATION_MICROSERVICE_DATABASE_CONNECTIONSTRING }
+      JWT__Secret: ${ JWT_SECRET }
     volumes:
       - logs:/logs
 
   authentication-microservice-database:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: postgres:16
     container_name: authentication-microservice-database
     ports: 
-      - "1433:1433"
+      - "5432:5432"
+      - "15432:15432"
     networks: 
       - authentication-microservice-network
     environment:
-      - ACCEPT_EULA:${ACCEPT_EULA}
-      - MSSQL_SA_PASSWORD:${MSSQL_SA_PASSWORD}
+      POSTGRES_PASSWORD: ${ AUTHENTICATION_MICROSERVICE_DATABASE_POSTGRES_PASSWORD }
+      POSTGRES_USER: ${ AUTHENTICATION_MICROSERVICE_DATABASE_POSTGRES_USER }
   
   files-microservice-api:
     container_name: files-microservice-api
     image: ${DOCKER_REGISTRY}/files-microservice-api:latest
     ports:
       - "5002:80"
-    depends_on:
-      - files-microservice-database
     networks:
       - files-microservice-network
       - ocelot-gateway-network
       - rabbit-mq-network
     environment:
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT}
-      DATABASE_NAME: ${DATABASE_NAME}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      JWT_SECRET: ${JWT_SECRET}
-      RABBIT_MQ_HOSTNAME: ${RABBIT_MQ_HOSTNAME}
-      RABBIT_MQ_USERNAME: ${RABBIT_MQ_USERNAME}
-      RABBIT_MQ_PASSWORD: ${RABBIT_MQ_PASSWORD}
-      RABBIT_MQ_VIRTUAL_HOST: ${RABBIT_MQ_VIRTUAL_HOST}
+      ConnectionStrings__PostgresDatabase: ${ FILES_MICROSERVICE_DATABASE_CONNECTION_STRING }
+      JWT__Secret: ${ JWT_SECRET }
+      RabbitMQ__Host: ${RABBIT_MQ_HOST}
+      RabbitMQ__Username: ${RABBIT_MQ_USERNAME}
+      RabbitMQ__Password: ${RABBIT_MQ_PASSWORD}
+      RabbitMQ__VirtualHost: ${RABBIT_MQ_VIRTUAL_HOST}
     volumes:
       - logs:/logs
         
   files-microservice-database:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: postgres:16
     container_name: files-microservice-database
     ports:
-      - "1434:1433"
+      - "5433:5432"
+      - "15433:15432"
     networks:
       - files-microservice-network
     environment:
-      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD}
-      ACCEPT_EULA: ${ACCEPT_EULA} 
+      POSTGRES_PASSWORD: ${ FILES_MICROSERVICE_DATABASE_POSTGRES_PASSWORD }
+      POSTGRES_USER: ${ FILES_MICROSERVICE_DATABASE_POSTGRES_USER }
   
   storage-microservice-api:
     container_name: storage-microservice-api
@@ -71,11 +63,11 @@ services:
     ports:
       - "5003:80"
     environment:
-      STORAGEPATH: ${STORAGEPATH}
-      RABBIT_MQ_HOSTNAME: ${RABBIT_MQ_HOSTNAME}
-      RABBIT_MQ_USERNAME: ${RABBIT_MQ_USERNAME}
-      RABBIT_MQ_PASSWORD: ${RABBIT_MQ_PASSWORD}
-      RABBIT_MQ_VIRTUAL_HOST: ${RABBIT_MQ_VIRTUAL_HOST}
+      Storage__Path: ${ STORAGE_MICROSERVICE_STORAGE_PATH }
+      RabbitMQ__Host: ${ RABBIT_MQ_HOSTNAME }
+      RabbitMQ__Username: ${ RABBIT_MQ_USERNAME }
+      RabbitMQ__Password: ${ RABBIT_MQ_PASSWORD }
+      RabbitMQ__VirtualHost: ${ RABBIT_MQ_VIRTUAL_HOST }
     volumes:
       - storage-microservice-volume:/app/storage/files
       - logs:/logs
@@ -94,13 +86,11 @@ services:
   
   rabbitmq:
     image: masstransit/rabbitmq
-    hostname: rabbitmq-host
+    hostname: ${ RABBIT_MQ_HOSTNAME }
     restart: always
-    env_file:
-      - environment/rabbit-mq/.env
     environment:
-      RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
+      RABBITMQ_DEFAULT_USER: ${RABBIT_MQ_USERNAME}
+      RABBITMQ_DEFAULT_PASS: ${RABBIT_MQ_PASSWORD}
     ports:
       - "15672:15672"
       - "5672:5672"

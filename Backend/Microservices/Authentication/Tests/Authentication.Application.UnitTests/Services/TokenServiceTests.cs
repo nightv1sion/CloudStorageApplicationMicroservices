@@ -35,7 +35,7 @@ public class TokenServiceTests
         var jwtSecret = "some jwt secret key";
         var tokenValidityInMinutes = 7;
         var username = "someusername";
-        _configuration.Setup<string>(x => x["JWT_SECRET"])
+        _configuration.Setup<string>(x => x["JWT:Secret"])
             .Returns(jwtSecret);
         _configuration.Setup<string>(x => x["JWT:TokenValidityInMinutes"])
             .Returns(tokenValidityInMinutes.ToString());
@@ -63,7 +63,7 @@ public class TokenServiceTests
         var jwtSecret = "some jwt secret key";
         var tokenValidityInMinutes = "invalid number";
         var username = "someusername";
-        _configuration.Setup<string>(x => x["JWT_SECRET"])
+        _configuration.Setup<string>(x => x["JWT:Secret"])
             .Returns(jwtSecret);
         _configuration.Setup<string>(conf => conf["JWT:TokenValidityInMinutes"])
             .Returns(tokenValidityInMinutes);
@@ -85,7 +85,7 @@ public class TokenServiceTests
         var jwtSecret = "some jwt secret key";
         var tokenValidityInMinutes = 7;
         var username = "someusername";
-        _configuration.Setup(conf => conf["JWT_SECRET"])
+        _configuration.Setup(conf => conf["JWT:Secret"])
             .Returns("");
         var authClaims = new List<Claim>()
         {
@@ -110,7 +110,7 @@ public class TokenServiceTests
         {
             new Claim(ClaimTypes.Name, username)
         };
-        _configuration.Setup(conf => conf["JWT_SECRET"])
+        _configuration.Setup(conf => conf["JWT:Secret"])
             .Returns(jwtSecret);
         var createdToken = CreateJwtToken(jwtSecret, tokenValidityInMinutes, claims);
         var token = createdToken.Reverse().ToString();
@@ -134,7 +134,7 @@ public class TokenServiceTests
         {
             new Claim(ClaimTypes.Name, username)
         };
-        _configuration.Setup(conf => conf["JWT_SECRET"])
+        _configuration.Setup(conf => conf["JWT:Secret"])
             .Returns(jwtSecret);
         var token = CreateJwtToken(jwtSecret, tokenValidityInMinutes, claims);
         

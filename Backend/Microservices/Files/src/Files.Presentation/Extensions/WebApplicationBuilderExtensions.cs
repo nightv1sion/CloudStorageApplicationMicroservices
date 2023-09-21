@@ -23,6 +23,8 @@ public static class WebApplicationBuilderExtensions
         builder.Services.AddAutoMapper(typeof(InvalidFileIdBadRequestException).Assembly);
         builder.Services.AddValidatorsFromAssembly(typeof(InvalidFileIdBadRequestException).Assembly);
         
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+        
         return builder;
     }
 }

@@ -20,6 +20,8 @@ public static class WebApplicationBuilderExtensions
             Assembly.GetAssembly(typeof(Application.Common.Exceptions.Unauthorized.InvalidUserNameUnauthorized)));
         builder.Services.ConfigureServices();
         builder.Services.ConfigureMediator();
+        
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
         return builder;
     }

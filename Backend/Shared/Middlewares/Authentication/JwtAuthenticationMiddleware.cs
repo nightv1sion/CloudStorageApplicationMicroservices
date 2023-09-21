@@ -29,7 +29,7 @@ public class JwtAuthenticationMiddleware
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var jwtSecret = _configuration["JWT_SECRET"];
+                var jwtSecret = _configuration["JWT:Secret"];
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret!));
                 var result = await tokenHandler.ValidateTokenAsync(token, new TokenValidationParameters()
                 {

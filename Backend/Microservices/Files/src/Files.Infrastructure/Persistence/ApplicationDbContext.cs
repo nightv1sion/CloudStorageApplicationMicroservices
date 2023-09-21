@@ -16,7 +16,6 @@ public class ApplicationDatabaseContext : DbContext
 
         modelBuilder.Entity<Directory>()
             .HasIndex(x => x.Id, "directories_id_uindex");
-
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

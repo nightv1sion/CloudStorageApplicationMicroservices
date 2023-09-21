@@ -7,25 +7,26 @@ services:
       dockerfile: ../Backend/Microservices/Authentication/src/Authentication.Presentation/Dockerfile
     ports:
       - "5001:80"
-    depends_on:
-      - authentication-microservice-database
     networks:
       - authentication-microservice-network
       - ocelot-gateway-network
-    env_file:
-      - environment/authentication-microservice/api.env
+    environment:
+      ConnectionStrings__PostgresDatabase: Host=host.docker.internal;Port=5432;Database=Authentication;Username=postgres;Password=postgres;Include Error Details=true;
+      JWT__Secret: ${JWT_SECRET}
     volumes:
       - logs:/logs
 
   authentication-microservice-database:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: postgres:16
     container_name: authentication-microservice-database
-    ports:
-      - "1433:1433"
-    networks:
+    ports: 
+      - "5432:5432"
+      - "15432:15432"
+    networks: 
       - authentication-microservice-network
-    env_file:
-      - environment/authentication-microservice/database.env
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
   
   files-microservice-api:
     container_name: files-microservice-api
@@ -34,26 +35,31 @@ services:
       dockerfile: ../Backend/Microservices/Files/src/Files.Presentation/Dockerfile
     ports:
       - "5002:80"
-    depends_on:
-      - files-microservice-database
     networks:
       - files-microservice-network
       - ocelot-gateway-network
       - rabbit-mq-network
-    env_file:
-      - environment/files-microservice/api.env
+    environment:
+      ConnectionStrings__PostgresDatabase: Host=host.docker.internal;Port=5433;Database=Files;Username=postgres;Password=postgres;Include Error Details=true;
+      JWT__Secret: "${JWT_SECRET}"
+      RabbitMQ__Host: host.docker.internal
+      RabbitMQ__Username: guest
+      RabbitMQ__Password: guest
+      RabbitMQ__VirtualHost: /
     volumes:
       - logs:/logs
-  
+        
   files-microservice-database:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: postgres:16
     container_name: files-microservice-database
     ports:
-      - "1434:1433"
+      - "5433:5432"
+      - "15433:15432"
     networks:
       - files-microservice-network
-    env_file:
-      - environment/files-microservice/database.env
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
   
   storage-microservice-api:
     container_name: storage-microservice-api
@@ -62,8 +68,12 @@ services:
       dockerfile: ../Backend/Microservices/Storage/Storage.API/Dockerfile
     ports:
       - "5003:80"
-    env_file:
-      - environment/storage-microservice/api.env
+    environment:
+      Storage__Path: storage/files
+      RabbitMQ__Host: host.docker.internal
+      RabbitMQ__Username: guest
+      RabbitMQ__Password: guest
+      RabbitMQ__VirtualHost: /
     volumes:
       - storage-microservice-volume:/app/storage/files
       - logs:/logs
@@ -77,25 +87,24 @@ services:
       dockerfile: ../Backend/ApiGateways/OcelotApiGateway/Dockerfile
     ports:
       - "5004:80"
+    environment:
+      - AuthenticationMicroservice__ValidateTokenPath=http://host.docker.internal:5001/api/validate-user
     volumes:
       - logs:/logs
-    networks:
+    networks: 
       - ocelot-gateway-network
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
   
   rabbitmq:
     image: masstransit/rabbitmq
-    hostname: rabbitmq-host
+    hostname: localhost
     restart: always
-    env_file:
-      - environment/rabbit-mq/.env
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
     ports:
       - "15672:15672"
       - "5672:5672"
-    networks:
+    networks: 
       - rabbit-mq-network
 
 networks:
@@ -104,7 +113,7 @@ networks:
   rabbit-mq-network:
   ocelot-gateway-network:
 
-volumes:
+volumes: 
   logs:
   storage-microservice-volume:
   

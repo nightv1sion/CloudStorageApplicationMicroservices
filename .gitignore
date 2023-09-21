@@ -3,3 +3,5 @@
 obj
 .vs
 *.sln.DotSettings.user
+*/ocelot.json
+.env
