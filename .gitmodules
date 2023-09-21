@@ -13,3 +13,6 @@
 [submodule "Backend/Microservices/Storage"]
 	path = Backend/Microservices/Storage
 	url = https://github.com/nightv1sion/night-cloud-backend-microservices-storage
+[submodule "Backend/Shared/DatabaseInfrastructure"]
+	path = Backend/Shared/DatabaseInfrastructure
+	url = https://github.com/nightv1sion/night-cloud-backend-shared-database-infrastructure
