@@ -7,3 +7,6 @@
 [submodule "Backend/Microservices/Authentication"]
 	path = Backend/Microservices/Authentication
 	url = https://github.com/nightv1sion/night-cloud-backend-microservices-authentication
+[submodule "Backend/Microservices/Files"]
+	path = Backend/Microservices/Files
+	url = https://github.com/nightv1sion/night-cloud-backend-microservices-files
