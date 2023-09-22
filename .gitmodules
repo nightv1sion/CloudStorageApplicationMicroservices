@@ -16,3 +16,6 @@
 [submodule "Backend/Shared/DatabaseInfrastructure"]
 	path = Backend/Shared/DatabaseInfrastructure
 	url = https://github.com/nightv1sion/night-cloud-backend-shared-database-infrastructure
+[submodule "~/Backend/Shared/Middlewares"]
+	path = ~/Backend/Shared/Middlewares
+	url = https://github.com/nightv1sion/night-cloud-backend-shared-middlewares
