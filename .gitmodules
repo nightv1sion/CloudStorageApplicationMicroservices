@@ -25,3 +25,6 @@
 [submodule "Backend/Shared/Routes"]
 	path = Backend/Shared/Routes
 	url = https://github.com/nightv1sion/night-cloud-backend-shared-routes
+[submodule "Backend/Shared/Services"]
+	path = Backend/Shared/Services
+	url = https://github.com/nightv1sion/night-cloud-backend-shared-services
