@@ -22,3 +22,6 @@
 [submodule "sub"]
 	path = Backend/Shared/QueueMessaging
 	url = https://github.com/nightv1sion/night-cloud-backend-shared-queue-messaging
+[submodule "Backend/Shared/Routes"]
+	path = Backend/Shared/Routes
+	url = https://github.com/nightv1sion/night-cloud-backend-shared-routes
