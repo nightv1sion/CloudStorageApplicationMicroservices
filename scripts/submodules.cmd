@@ -12,7 +12,7 @@ git add .
 
 git commit -m "remove Backend/Shared/Middlewares"
 
-rm Backend/Shared/Middlewares
+rem Backend/Shared/Middlewares
 
 git submodule add https://github.com/nightv1sion/night-cloud-backend-shared-middlewares Backend/Shared/Middlewares
 
