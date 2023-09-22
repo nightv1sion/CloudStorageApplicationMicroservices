@@ -19,3 +19,6 @@
 [submodule "~/Backend/Shared/Middlewares"]
 	path = ~/Backend/Shared/Middlewares
 	url = https://github.com/nightv1sion/night-cloud-backend-shared-middlewares
+[submodule "sub"]
+	path = Backend/Shared/QueueMessaging
+	url = https://github.com/nightv1sion/night-cloud-backend-shared-queue-messaging
