@@ -1,30 +1,30 @@
-[submodule "Infrastructure"]
-	path = Infrastructure
+[submodule "infrastructure"]
+	path = infrastructure
 	url = https://github.com/nightv1sion/night-cloud-infrastructure
-[submodule "Backend/ApiGateways/OcelotApiGateway"]
-	path = Backend/ApiGateways/OcelotApiGateway
+[submodule "backend/api-gateways/ocelot-api-gateway"]
+	path = backend/api-gateways/ocelot-api-gateway
 	url = https://github.com/nightv1sion/night-cloud-backend-api-gateways-ocelot-api-gateway
-[submodule "Backend/Microservices/Authentication"]
-	path = Backend/Microservices/Authentication
+[submodule "backend/microservices/authentication"]
+	path = backend/microservices/authentication
 	url = https://github.com/nightv1sion/night-cloud-backend-microservices-authentication
-[submodule "Backend/Microservices/Files"]
-	path = Backend/Microservices/Files
+[submodule "backend/microservices/files"]
+	path = backend/microservices/files
 	url = https://github.com/nightv1sion/night-cloud-backend-microservices-files
-[submodule "Backend/Microservices/Storage"]
-	path = Backend/Microservices/Storage
+[submodule "backend/microservices/storage"]
+	path = backend/microservices/storage
 	url = https://github.com/nightv1sion/night-cloud-backend-microservices-storage
-[submodule "Backend/Shared/DatabaseInfrastructure"]
-	path = Backend/Shared/DatabaseInfrastructure
+[submodule "backend/shared/databaseInfrastructure"]
+	path = backend/shared/databaseInfrastructure
 	url = https://github.com/nightv1sion/night-cloud-backend-shared-database-infrastructure
-[submodule "~/Backend/Shared/Middlewares"]
-	path = ~/Backend/Shared/Middlewares
+[submodule "backend/shared/middlewares"]
+	path = backend/shared/middlewares
 	url = https://github.com/nightv1sion/night-cloud-backend-shared-middlewares
-[submodule "sub"]
-	path = Backend/Shared/QueueMessaging
+[submodule "backend/shared/queue-messaging"]
+	path = backend/shared/queue-messaging
 	url = https://github.com/nightv1sion/night-cloud-backend-shared-queue-messaging
-[submodule "Backend/Shared/Routes"]
-	path = Backend/Shared/Routes
+[submodule "backend/shared/routes"]
+	path = backend/shared/routes
 	url = https://github.com/nightv1sion/night-cloud-backend-shared-routes
-[submodule "Backend/Shared/Services"]
-	path = Backend/Shared/Services
+[submodule "backend/shared/services"]
+	path = backend/shared/services
 	url = https://github.com/nightv1sion/night-cloud-backend-shared-services
