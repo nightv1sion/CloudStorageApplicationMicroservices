@@ -1,0 +1,15 @@
+[submodule "backend/common/services"]
+	path = backend/common/services
+	url = https://github.com/nightv1sion/night-cloud-backend-shared-services
+[submodule "backend/common/routes"]
+	path = backend/common/routes
+	url = https://github.com/nightv1sion/night-cloud-backend-shared-routes
+[submodule "backend/common/queue-messaging"]
+	path = backend/common/queue-messaging
+	url = https://github.com/nightv1sion/night-cloud-backend-shared-queue-messaging
+[submodule "backend/common/middlewares"]
+	path = backend/common/middlewares
+	url = https://github.com/nightv1sion/night-cloud-backend-shared-middlewares
+[submodule "backend/common/database-infrastructure"]
+	path = backend/common/database-infrastructure
+	url = https://github.com/nightv1sion/night-cloud-backend-shared-database-infrastructure
