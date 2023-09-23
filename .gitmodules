@@ -13,3 +13,18 @@
 [submodule "backend/common/database-infrastructure"]
 	path = backend/common/database-infrastructure
 	url = https://github.com/nightv1sion/night-cloud-backend-shared-database-infrastructure
+[submodule "backend/microservices/storage"]
+	path = backend/microservices/storage
+	url = https://github.com/nightv1sion/night-cloud-backend-microservices-storage
+[submodule "backend/microservices/files"]
+	path = backend/microservices/files
+	url = https://github.com/nightv1sion/night-cloud-backend-microservices-files
+[submodule "backend/microservices/authentication"]
+	path = backend/microservices/authentication
+	url = https://github.com/nightv1sion/night-cloud-backend-microservices-authentication
+[submodule "backend/api-gateways/ocelot-api-gateway"]
+	path = backend/api-gateways/ocelot-api-gateway
+	url = https://github.com/nightv1sion/night-cloud-backend-api-gateways-ocelot-api-gateway
+[submodule "infrastructure"]
+	path = infrastructure
+	url = https://github.com/nightv1sion/night-cloud-infrastructure
