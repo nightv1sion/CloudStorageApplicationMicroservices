@@ -38,3 +38,7 @@
 	path = infrastructure
 	url = https://github.com/nightv1sion/night-cloud-infrastructure
 	branch = master
+[submodule "frontend"]
+	path = frontend
+	url = https://github.com/nightv1sion/night-cloud-frontend
+	branch = master
